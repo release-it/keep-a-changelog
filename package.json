@@ -1,0 +1,42 @@
+{
+  "name": "@release-it/keep-a-changelog",
+  "version": "0.0.0",
+  "description": "Keep-a-changelog plugin for release-it",
+  "main": "index.js",
+  "scripts": {
+    "test": "bron test.js",
+    "release": "release-it"
+  },
+  "keywords": [
+    "release",
+    "release-it",
+    "release-it-plugin"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/release-it/keep-a-changelog.git"
+  },
+  "homepage": "https://github.com/release-it/keep-a-changelog#readme",
+  "bugs": "https://github.com/release-it/keep-a-changelog/issues",
+  "author": "",
+  "dependencies": {
+    "release-it": "^13.5.8"
+  },
+  "devDependencies": {
+    "bron": "^1.1.1",
+    "mock-fs": "^4.12.0",
+    "sinon": "^9.0.2"
+  },
+  "engines": {
+    "node": ">=10"
+  },
+  "release-it": {
+    "github": {
+      "release": true
+    },
+    "hooks": {
+      "before:init": "npm test"
+    }
+  }
+}
