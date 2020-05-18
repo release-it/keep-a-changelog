@@ -19,7 +19,11 @@
   },
   "homepage": "https://github.com/release-it/keep-a-changelog#readme",
   "bugs": "https://github.com/release-it/keep-a-changelog/issues",
-  "author": "",
+  "author": {
+    "name": "Lars Kappert",
+    "email": "lars@webpro.nl",
+    "url": "https://webpro.nl"
+  },
   "dependencies": {
     "release-it": "^13.5.8"
   },
