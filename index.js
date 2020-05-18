@@ -54,10 +54,12 @@ class KeepAChangelog extends Plugin {
   }
 
   beforeRelease() {
+    const { isDryRun } = this.global;
+    if (isDryRun) return;
     const { version } = this.getContext();
     const formattedDate = getFormattedDate();
     const releaseTitle = `\n\n## [${version}] - ${formattedDate}\n\n`;
-    const changelog = this.changelogContent.replace(this.unreleasedTitle, releaseTitle);
+    const changelog = this.changelogContent.replace(this.unreleasedTitle, releaseTitle);  
     fs.writeFileSync(this.changelogPath, changelog);
   }
 }
