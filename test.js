@@ -94,3 +94,10 @@ test('should not write changelog with keep unreleased option', async t => {
     initialDryRunFileContents
   );
 });
+
+test('should find changelog even if less new lines is used', async t => {
+  const options = { [namespace]: { filename: 'CHANGELOG-LESS_NEW_LINES.md' } };
+  const plugin = factory(Plugin, { namespace, options });
+  await runTasks(plugin);
+  assert.equal(plugin.getChangelog(), '* Item A\n* Item B');
+});
