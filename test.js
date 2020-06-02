@@ -11,7 +11,8 @@ mock({
   './CHANGELOG-UNRELEASED.md': '\n\n## [Unreleased]\n\n* Item A\n* Item B',
   './CHANGELOG-EMPTY.md': '\n\n## [Unreleased]\n\n\n\n## [1.0.0]\n\n* Item A\n* Item B',
   './CHANGELOG-FULL.md': '\n\n## [Unreleased]\n\n* Item A\n* Item B\n\n## [1.0.0] - 2020-05-02\n\n* Item C\n* Item D',
-  './CHANGELOG-DRYRUN.md': initialDryRunFileContents
+  './CHANGELOG-DRYRUN.md': initialDryRunFileContents,
+  './CHANGELOG-LESS_NEW_LINES.md': '\n\n## [Unreleased]\n* Item A\n* Item B\n## [1.0.0] - 2020-05-02\n* Item C\n* Item D'
 });
 
 const readFile = file => fs.readFileSync(file).toString().trim();
@@ -45,8 +46,26 @@ test('should throw for missing section for previous release', async t => {
   );
 });
 
+test('should find very first changelog with disabled strict latest option', async t => {
+  const options = { [namespace]: { filename: 'CHANGELOG-UNRELEASED.md', strictLatest: false } };
+  const plugin = factory(Plugin, { namespace, options });
+  await runTasks(plugin);
+  assert.equal(plugin.getChangelog(), '* Item A\n* Item B');
+});
+
 test('should write changelog', async t => {
   const options = { [namespace]: { filename: 'CHANGELOG-FULL.md' } };
+  const plugin = factory(Plugin, { namespace, options });
+  await runTasks(plugin);
+  assert.equal(plugin.getChangelog(), '* Item A\n* Item B');
+  assert.match(
+    readFile('./CHANGELOG-FULL.md'),
+    /## \[1\.0\.1\] - [0-9]{4}-[0-9]{2}-[0-9]{2}\n\n\* Item A\n\* Item B\n\n## \[1\.0\.0\] - 2020-05-02\n\n\* Item C\n*\* Item D/
+  );
+});
+
+test('should write changelog even with disabled strict latest option', async t => {
+  const options = { [namespace]: { filename: 'CHANGELOG-FULL.md', strictLatest: false } };
   const plugin = factory(Plugin, { namespace, options });
   await runTasks(plugin);
   assert.equal(plugin.getChangelog(), '* Item A\n* Item B');
@@ -66,3 +85,12 @@ test('should not write changelog in dry run', async t => {
   );
 });
 
+test('should not write changelog with keep unreleased option', async t => {
+  const options = { [namespace]: { filename: 'CHANGELOG-DRYRUN.md', keepUnreleased: true } };
+  const plugin = factory(Plugin, { namespace, options });
+  await runTasks(plugin);
+  assert.equal(
+    fs.readFileSync('./CHANGELOG-DRYRUN.md').toString(),
+    initialDryRunFileContents
+  );
+});
