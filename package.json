@@ -1,6 +1,6 @@
 {
   "name": "@release-it/keep-a-changelog",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Keep-a-changelog plugin for release-it",
   "main": "index.js",
   "scripts": {
