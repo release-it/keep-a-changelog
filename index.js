@@ -44,7 +44,7 @@ class KeepAChangelog extends Plugin {
     const startIndex = this.changelogContent.indexOf(this.unreleasedTitle) + this.unreleasedTitle.length;
     let endIndex = this.changelogContent.indexOf(previousReleaseTitle, startIndex);
     if (!strictLatest && endIndex === -1) {
-      endIndex = this.changelogContent.length
+      endIndex = this.changelogContent.length;
     }
 
     const changelogContent = this.changelogContent.substring(startIndex, endIndex).trim();
@@ -61,7 +61,7 @@ class KeepAChangelog extends Plugin {
   }
 
   beforeRelease() {
-    const { keepUnreleased } = this
+    const { keepUnreleased } = this;
     const { isDryRun } = this.global;
     if (isDryRun || keepUnreleased) return;
     const { version } = this.getContext();

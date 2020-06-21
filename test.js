@@ -5,7 +5,8 @@ const mock = require('mock-fs');
 const { factory, runTasks } = require('release-it/test/util');
 const Plugin = require('.');
 
-const initialDryRunFileContents = '\n\n## [Unreleased]\n\n* Item A\n* Item B\n\n## [1.0.0] - 2020-05-02\n\n* Item C\n* Item D';
+const initialDryRunFileContents =
+  '\n\n## [Unreleased]\n\n* Item A\n* Item B\n\n## [1.0.0] - 2020-05-02\n\n* Item C\n* Item D';
 mock({
   './CHANGELOG-FOO.md': '\n\n## [FOO]\n\n* Item A\n* Item B',
   './CHANGELOG-UNRELEASED.md': '\n\n## [Unreleased]\n\n* Item A\n* Item B',
@@ -79,20 +80,14 @@ test('should not write changelog in dry run', async t => {
   const options = { [namespace]: { filename: 'CHANGELOG-DRYRUN.md' } };
   const plugin = factory(Plugin, { namespace, options, global: { isDryRun: true } });
   await runTasks(plugin);
-  assert.equal(
-    fs.readFileSync('./CHANGELOG-DRYRUN.md').toString(),
-    initialDryRunFileContents
-  );
+  assert.equal(fs.readFileSync('./CHANGELOG-DRYRUN.md').toString(), initialDryRunFileContents);
 });
 
 test('should not write changelog with keep unreleased option', async t => {
   const options = { [namespace]: { filename: 'CHANGELOG-DRYRUN.md', keepUnreleased: true } };
   const plugin = factory(Plugin, { namespace, options });
   await runTasks(plugin);
-  assert.equal(
-    fs.readFileSync('./CHANGELOG-DRYRUN.md').toString(),
-    initialDryRunFileContents
-  );
+  assert.equal(fs.readFileSync('./CHANGELOG-DRYRUN.md').toString(), initialDryRunFileContents);
 });
 
 test('should find changelog even if less new lines is used', async t => {
