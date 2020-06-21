@@ -1,6 +1,7 @@
 const { Plugin } = require('release-it');
 const fs = require('fs');
 const path = require('path');
+const detectNewline = require('detect-newline');
 
 const pad = num => ('0' + num).slice(-2);
 
@@ -19,8 +20,9 @@ class KeepAChangelog extends Plugin {
 
     this.changelogPath = path.resolve(this.filename);
     this.changelogContent = fs.readFileSync(this.changelogPath, 'utf-8');
+    this.EOL = detectNewline(this.changelogContent);
     this.unreleasedTitleRaw = 'Unreleased';
-    this.unreleasedTitle = `\n\n## [${this.unreleasedTitleRaw}]\n`;
+    this.unreleasedTitle = `${this.EOL}${this.EOL}## [${this.unreleasedTitleRaw}]${this.EOL}`;
 
     const hasUnreleasedSection = this.changelogContent.includes(this.unreleasedTitle);
     if (!hasUnreleasedSection) {
@@ -66,8 +68,8 @@ class KeepAChangelog extends Plugin {
     if (isDryRun || keepUnreleased) return;
     const { version } = this.getContext();
     const formattedDate = getFormattedDate();
-    const releaseTitle = `\n\n## [${version}] - ${formattedDate}\n`;
-    const changelog = this.changelogContent.replace(this.unreleasedTitle, releaseTitle);  
+    const releaseTitle = `${this.EOL}${this.EOL}## [${version}] - ${formattedDate}${this.EOL}`;
+    const changelog = this.changelogContent.replace(this.unreleasedTitle, releaseTitle);
     fs.writeFileSync(this.changelogPath, changelog);
   }
 }

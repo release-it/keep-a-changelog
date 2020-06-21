@@ -13,7 +13,10 @@ mock({
   './CHANGELOG-EMPTY.md': '\n\n## [Unreleased]\n\n\n\n## [1.0.0]\n\n* Item A\n* Item B',
   './CHANGELOG-FULL.md': '\n\n## [Unreleased]\n\n* Item A\n* Item B\n\n## [1.0.0] - 2020-05-02\n\n* Item C\n* Item D',
   './CHANGELOG-DRYRUN.md': initialDryRunFileContents,
-  './CHANGELOG-LESS_NEW_LINES.md': '\n\n## [Unreleased]\n* Item A\n* Item B\n## [1.0.0] - 2020-05-02\n* Item C\n* Item D'
+  './CHANGELOG-LESS_NEW_LINES.md':
+    '\n\n## [Unreleased]\n* Item A\n* Item B\n## [1.0.0] - 2020-05-02\n* Item C\n* Item D',
+  './CHANGELOG-EOL.md':
+    '\r\n\r\n## [Unreleased]\r\n\r\n* Item A\r\n* Item B\r\n\r\n## [1.0.0] - 2020-05-02\r\n\r\n* Item C\r\n* Item D'
 });
 
 const readFile = file => fs.readFileSync(file).toString().trim();
@@ -95,4 +98,15 @@ test('should find changelog even if less new lines is used', async t => {
   const plugin = factory(Plugin, { namespace, options });
   await runTasks(plugin);
   assert.equal(plugin.getChangelog(), '* Item A\n* Item B');
+});
+
+test('should write changelog (with different EOL)', async t => {
+  const options = { [namespace]: { filename: 'CHANGELOG-EOL.md' } };
+  const plugin = factory(Plugin, { namespace, options });
+  await runTasks(plugin);
+  assert.equal(plugin.getChangelog(), '* Item A\r\n* Item B');
+  assert.match(
+    readFile('./CHANGELOG-EOL.md'),
+    /## \[1\.0\.1\] - [0-9]{4}-[0-9]{2}-[0-9]{2}\r\n\r\n\* Item A\r\n\* Item B\r\n\r\n## \[1\.0\.0\] - 2020-05-02\r\n\r\n\* Item C\r\n*\* Item D/
+  );
 });

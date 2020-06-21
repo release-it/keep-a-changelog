@@ -25,6 +25,7 @@
     "url": "https://webpro.nl"
   },
   "dependencies": {
+    "detect-newline": "^3.1.0",
     "release-it": "^13.6.3"
   },
   "devDependencies": {
