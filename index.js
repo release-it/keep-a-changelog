@@ -64,7 +64,7 @@ class KeepAChangelog extends Plugin {
 
   beforeRelease() {
     const { keepUnreleased } = this;
-    const { isDryRun } = this.global;
+    const { isDryRun } = this.config;
     if (isDryRun || keepUnreleased) return;
     const { version } = this.getContext();
     const formattedDate = getFormattedDate();
