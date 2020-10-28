@@ -113,7 +113,7 @@ test('should write changelog (with different EOL)', async t => {
 });
 
 test('should write changelog and add unreleased section with add unreleased option', async t => {
-  const options = { [namespace]: { filename: 'CHANGELOG-FULL.md', addUnrelease: true } };
+  const options = { [namespace]: { filename: 'CHANGELOG-FULL.md', addUnreleased: true } };
   const plugin = factory(Plugin, { namespace, options });
   await runTasks(plugin);
   assert.equal(plugin.getChangelog(), '* Item A\n* Item B');

@@ -12,11 +12,11 @@ const getFormattedDate = () => {
 
 class KeepAChangelog extends Plugin {
   init() {
-    const { filename, strictLatest, addUnrelease, keepUnreleased } = this.options;
+    const { filename, strictLatest, addUnreleased, keepUnreleased } = this.options;
 
     this.filename = filename || 'CHANGELOG.md';
     this.strictLatest = strictLatest === undefined ? true : Boolean(strictLatest);
-    this.addUnrelease = addUnrelease === undefined ? false : Boolean(addUnrelease);
+    this.addUnreleased = addUnreleased === undefined ? false : Boolean(addUnreleased);
     this.keepUnreleased = keepUnreleased === undefined ? false : Boolean(keepUnreleased);
 
     this.changelogPath = path.resolve(this.filename);
@@ -64,12 +64,12 @@ class KeepAChangelog extends Plugin {
   }
 
   beforeRelease() {
-    const { addUnrelease, keepUnreleased } = this;
+    const { addUnreleased, keepUnreleased } = this;
     const { isDryRun } = this.config;
     if (isDryRun || keepUnreleased) return;
     const { version } = this.getContext();
     const formattedDate = getFormattedDate();
-    const releaseTitle = `${addUnrelease ? this.unreleasedTitle : this.EOL}${this.EOL}## [${version}] - ${formattedDate}${this.EOL}`;
+    const releaseTitle = `${addUnreleased ? this.unreleasedTitle : this.EOL}${this.EOL}## [${version}] - ${formattedDate}${this.EOL}`;
     const changelog = this.changelogContent.replace(this.unreleasedTitle, releaseTitle);
     fs.writeFileSync(this.changelogPath, changelog);
   }
