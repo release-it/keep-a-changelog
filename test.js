@@ -111,3 +111,14 @@ test('should write changelog (with different EOL)', async t => {
     /## \[1\.0\.1\] - [0-9]{4}-[0-9]{2}-[0-9]{2}\r\n\r\n\* Item A\r\n\* Item B\r\n\r\n## \[1\.0\.0\] - 2020-05-02\r\n\r\n\* Item C\r\n*\* Item D/
   );
 });
+
+test('should write changelog and add unreleased section with add unreleased option', async t => {
+  const options = { [namespace]: { filename: 'CHANGELOG-FULL.md', addUnrelease: true } };
+  const plugin = factory(Plugin, { namespace, options });
+  await runTasks(plugin);
+  assert.equal(plugin.getChangelog(), '* Item A\n* Item B');
+  assert.match(
+    readFile('./CHANGELOG-FULL.md'),
+    /## \[Unreleased\]\n\n## \[1\.0\.1\] - [0-9]{4}-[0-9]{2}-[0-9]{2}\n\n\* Item A\n\* Item B\n\n## \[1\.0\.0\] - 2020-05-02\n\n\* Item C\n*\* Item D/
+  );
+});
