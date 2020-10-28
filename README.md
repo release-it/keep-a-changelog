@@ -21,8 +21,9 @@ In [release-it](https://github.com/release-it/release-it) config:
 
 ## Options
 
-| option         | default value  | description                                                  |
-| -------------- | -------------- | ------------------------------------------------------------ |
-| filename       | `CHANGELOG.md` | File with changelogs.                                        |
+| option         | default value  | description                                                                                                                                      |
+| -------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| filename       | `CHANGELOG.md` | File with changelogs.                                                                                                                            |
 | strictLatest   | `true`         | Entry of latest version must be present in order to get correct changelog. Set this option to `false` if you expect latest version without logs. |
-| keepUnreleased | `false`        | It leaves "Unreleased" title row unchanged if set to `true`. |
+| addUnrelease   | `false`        | It leaves "Unreleased" title row if set to `true`.                                                                                               |
+| keepUnreleased | `false`        | It leaves "Unreleased" title row unchanged if set to `true`.                                                                                     |
