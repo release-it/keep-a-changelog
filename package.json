@@ -10,7 +10,11 @@
   "keywords": [
     "release",
     "release-it",
-    "release-it-plugin"
+    "release-it-plugin",
+    "keep-a-changelog",
+    "changelog",
+    "changes",
+    "unreleased"
   ],
   "license": "MIT",
   "repository": {
