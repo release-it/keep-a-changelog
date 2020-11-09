@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const detectNewline = require('detect-newline');
 
-const pad = num => ('0' + num).slice(-2);
+const pad = num => `0${num}`.slice(-2);
 
 const getFormattedDate = () => {
   const today = new Date();
@@ -23,12 +23,30 @@ class KeepAChangelog extends Plugin {
     this.changelogContent = fs.readFileSync(this.changelogPath, 'utf-8');
     this.EOL = detectNewline(this.changelogContent);
     this.unreleasedTitleRaw = 'Unreleased';
+    this.unreleasedTitleToAdd = `${this.EOL}${this.EOL}## [${this.unreleasedTitleRaw}]${this.EOL}`;
+
+    const unreleasedRegex = new RegExp(
+      String.raw`${this.EOL}${this.EOL}## \[${this.unreleasedTitleRaw}-(major|minor|patch)\]${this.EOL}`
+    );
+
+    const match = this.changelogContent.match(unreleasedRegex);
+    if (match) {
+      [, this.increment] = match;
+    } else {
+      this.increment = 'patch';
+    }
+
+    this.unreleasedTitleRaw = `${this.unreleasedTitleRaw}-${this.increment}`;
     this.unreleasedTitle = `${this.EOL}${this.EOL}## [${this.unreleasedTitleRaw}]${this.EOL}`;
 
     const hasUnreleasedSection = this.changelogContent.includes(this.unreleasedTitle);
     if (!hasUnreleasedSection) {
       throw Error(`Missing "${this.unreleasedTitleRaw}" section in ${filename}.`);
     }
+  }
+
+  getIncrement() {
+    return this.increment;
   }
 
   getChangelog(latestVersion) {
@@ -69,7 +87,9 @@ class KeepAChangelog extends Plugin {
     if (isDryRun || keepUnreleased) return;
     const { version } = this.getContext();
     const formattedDate = getFormattedDate();
-    const releaseTitle = `${addUnreleased ? this.unreleasedTitle : this.EOL}${this.EOL}## [${version}] - ${formattedDate}${this.EOL}`;
+    const releaseTitle = `${addUnreleased ? this.unreleasedTitleToAdd : this.EOL}${
+      this.EOL
+    }## [${version}] - ${formattedDate}${this.EOL}`;
     const changelog = this.changelogContent.replace(this.unreleasedTitle, releaseTitle);
     fs.writeFileSync(this.changelogPath, changelog);
   }

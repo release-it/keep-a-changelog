@@ -6,18 +6,18 @@ const { factory, runTasks } = require('release-it/test/util');
 const Plugin = require('.');
 
 const initialDryRunFileContents =
-  '\n\n## [Unreleased]\n\n* Item A\n* Item B\n\n## [1.0.0] - 2020-05-02\n\n* Item C\n* Item D';
+  '\n\n## [Unreleased-minor]\n\n* Item A\n* Item B\n\n## [1.0.0] - 2020-05-02\n\n* Item C\n* Item D';
 
 mock({
   './CHANGELOG-FOO.md': '\n\n## [FOO]\n\n* Item A\n* Item B',
-  './CHANGELOG-UNRELEASED.md': '\n\n## [Unreleased]\n\n* Item A\n* Item B',
-  './CHANGELOG-EMPTY.md': '\n\n## [Unreleased]\n\n\n\n## [1.0.0]\n\n* Item A\n* Item B',
-  './CHANGELOG-FULL.md': '\n\n## [Unreleased]\n\n* Item A\n* Item B\n\n## [1.0.0] - 2020-05-02\n\n* Item C\n* Item D',
+  './CHANGELOG-UNRELEASED.md': '\n\n## [Unreleased-minor]\n\n* Item A\n* Item B',
+  './CHANGELOG-EMPTY.md': '\n\n## [Unreleased-minor]\n\n\n\n## [1.0.0]\n\n* Item A\n* Item B',
+  './CHANGELOG-FULL.md': '\n\n## [Unreleased-minor]\n\n* Item A\n* Item B\n\n## [1.0.0] - 2020-05-02\n\n* Item C\n* Item D',
   './CHANGELOG-DRYRUN.md': initialDryRunFileContents,
   './CHANGELOG-LESS_NEW_LINES.md':
-    '\n\n## [Unreleased]\n* Item A\n* Item B\n## [1.0.0] - 2020-05-02\n* Item C\n* Item D',
+    '\n\n## [Unreleased-minor]\n* Item A\n* Item B\n## [1.0.0] - 2020-05-02\n* Item C\n* Item D',
   './CHANGELOG-EOL.md':
-    '\r\n\r\n## [Unreleased]\r\n\r\n* Item A\r\n* Item B\r\n\r\n## [1.0.0] - 2020-05-02\r\n\r\n* Item C\r\n* Item D'
+    '\r\n\r\n## [Unreleased-minor]\r\n\r\n* Item A\r\n* Item B\r\n\r\n## [1.0.0] - 2020-05-02\r\n\r\n* Item C\r\n* Item D'
 });
 
 const readFile = file => fs.readFileSync(file).toString().trim();
@@ -33,13 +33,13 @@ test('should throw for missing changelog file', async t => {
 test('should throw for missing "unreleased" section', async t => {
   const options = { [namespace]: { filename: 'CHANGELOG-FOO.md' } };
   const plugin = factory(Plugin, { namespace, options });
-  await assert.rejects(runTasks(plugin), /Missing "Unreleased" section in CHANGELOG-FOO.md/);
+  await assert.rejects(runTasks(plugin), /Missing "Unreleased-patch" section in CHANGELOG-FOO.md/);
 });
 
 test('should throw for empty "unreleased" section', async t => {
   const options = { [namespace]: { filename: 'CHANGELOG-EMPTY.md' } };
   const plugin = factory(Plugin, { namespace, options });
-  await assert.rejects(runTasks(plugin), /There are no entries under "Unreleased" section in CHANGELOG-EMPTY\.md/);
+  await assert.rejects(runTasks(plugin), /There are no entries under "Unreleased-minor" section in CHANGELOG-EMPTY\.md/);
 });
 
 test('should throw for missing section for previous release', async t => {
@@ -65,7 +65,7 @@ test('should write changelog', async t => {
   assert.equal(plugin.getChangelog(), '* Item A\n* Item B');
   assert.match(
     readFile('./CHANGELOG-FULL.md'),
-    /## \[1\.0\.1\] - [0-9]{4}-[0-9]{2}-[0-9]{2}\n\n\* Item A\n\* Item B\n\n## \[1\.0\.0\] - 2020-05-02\n\n\* Item C\n*\* Item D/
+    /## \[1\.1\.0\] - [0-9]{4}-[0-9]{2}-[0-9]{2}\n\n\* Item A\n\* Item B\n\n## \[1\.0\.0\] - 2020-05-02\n\n\* Item C\n*\* Item D/
   );
 });
 
@@ -76,7 +76,7 @@ test('should write changelog even with disabled strict latest option', async t =
   assert.equal(plugin.getChangelog(), '* Item A\n* Item B');
   assert.match(
     readFile('./CHANGELOG-FULL.md'),
-    /## \[1\.0\.1\] - [0-9]{4}-[0-9]{2}-[0-9]{2}\n\n\* Item A\n\* Item B\n\n## \[1\.0\.0\] - 2020-05-02\n\n\* Item C\n*\* Item D/
+    /## \[1\.1\.0\] - [0-9]{4}-[0-9]{2}-[0-9]{2}\n\n\* Item A\n\* Item B\n\n## \[1\.0\.0\] - 2020-05-02\n\n\* Item C\n*\* Item D/
   );
 });
 
@@ -108,10 +108,11 @@ test('should write changelog (with different EOL)', async t => {
   assert.equal(plugin.getChangelog(), '* Item A\r\n* Item B');
   assert.match(
     readFile('./CHANGELOG-EOL.md'),
-    /## \[1\.0\.1\] - [0-9]{4}-[0-9]{2}-[0-9]{2}\r\n\r\n\* Item A\r\n\* Item B\r\n\r\n## \[1\.0\.0\] - 2020-05-02\r\n\r\n\* Item C\r\n*\* Item D/
+    /## \[1\.1\.0\] - [0-9]{4}-[0-9]{2}-[0-9]{2}\r\n\r\n\* Item A\r\n\* Item B\r\n\r\n## \[1\.0\.0\] - 2020-05-02\r\n\r\n\* Item C\r\n*\* Item D/
   );
 });
 
+// fails
 test('should write changelog and add unreleased section with add unreleased option', async t => {
   const options = { [namespace]: { filename: 'CHANGELOG-FULL.md', addUnreleased: true } };
   const plugin = factory(Plugin, { namespace, options });
@@ -119,6 +120,6 @@ test('should write changelog and add unreleased section with add unreleased opti
   assert.equal(plugin.getChangelog(), '* Item A\n* Item B');
   assert.match(
     readFile('./CHANGELOG-FULL.md'),
-    /## \[Unreleased\]\n\n## \[1\.0\.1\] - [0-9]{4}-[0-9]{2}-[0-9]{2}\n\n\* Item A\n\* Item B\n\n## \[1\.0\.0\] - 2020-05-02\n\n\* Item C\n*\* Item D/
+    /## \[Unreleased\]\n\n## \[1\.1\.0\] - [0-9]{4}-[0-9]{2}-[0-9]{2}\n\n\* Item A\n\* Item B\n\n## \[1\.0\.0\] - 2020-05-02\n\n\* Item C\n*\* Item D/
   );
 });
