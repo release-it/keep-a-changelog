@@ -25,7 +25,7 @@ class KeepAChangelog extends Plugin {
     this.changelogContent = fs.readFileSync(this.changelogPath, 'utf-8');
     this.EOL = detectNewline(this.changelogContent);
     this.unreleasedTitleRaw = 'Unreleased';
-    this.unreleasedTitle = `${this.EOL}${this.EOL}## [${this.unreleasedTitleRaw}]${this.EOL}`;
+    this.unreleasedTitle = `## [${this.unreleasedTitleRaw}]`;
 
     const hasUnreleasedSection = this.changelogContent.includes(this.unreleasedTitle);
     if (!hasUnreleasedSection) {
@@ -65,28 +65,30 @@ class KeepAChangelog extends Plugin {
     this.setContext({ version });
   }
 
-  updateChangelogVersionUrls(changelog, repositoryUrl) {
-    const { version, latestVersion, tagName, latestTag, tagTemplate } = this.config.getContext();
+  addVersionUrls(changelog) {
+    const { version, latestVersion, tagName, latestTag, repo } = this.config.getContext();
     let updatedChangelog = changelog;
 
+    const repositoryUrl = `https://${repo.host}/${repo.repository}`;
+
     // Add or update the Unreleased link
-    const unreleasedVersionLink = `[Unreleased]:`;
-    const unreleasedVersionUrl = `[Unreleased]: ${repositoryUrl}/compare/${tagName}...HEAD`;
-    if (updatedChangelog.includes(unreleasedVersionLink)) {
-      updatedChangelog = updatedChangelog.replace(/\[Unreleased\]\:.*HEAD/, unreleasedVersionUrl);
+    const unreleasedUrl = `${repositoryUrl}/compare/${tagName}...HEAD`;
+    const unreleasedLink = `[Unreleased]: ${unreleasedUrl}`;
+    if (updatedChangelog.includes('[Unreleased]:')) {
+      updatedChangelog = updatedChangelog.replace(/\[Unreleased\]\:.*HEAD/, unreleasedLink);
     } else {
-      updatedChangelog = `${updatedChangelog}${this.EOL}${this.EOL}${unreleasedVersionUrl}`;
+      updatedChangelog = `${updatedChangelog}${this.EOL}${this.EOL}${unreleasedLink}`;
     }
 
     // Add a link for the new version
     const latestVersionLink = `[${latestVersion}]:`;
-    const newVersionUrl = `[${version}]: ${repositoryUrl}/compare/${latestTag}...${tagName}`;
+    const releaseUrl = `${repositoryUrl}/compare/${latestTag}...${tagName}`;
+    const releaseLink = `[${version}]: ${releaseUrl}`;
     if (updatedChangelog.includes(latestVersionLink)) {
-      updatedChangelog = updatedChangelog.replace(latestVersionLink, `${newVersionUrl}${this.EOL}${latestVersionLink}`)
+      return updatedChangelog.replace(latestVersionLink, `${releaseLink}${this.EOL}${latestVersionLink}`);
     } else {
-      updatedChangelog = `${updatedChangelog}${this.EOL}${newVersionUrl}${this.EOL}`;
+      return `${updatedChangelog}${this.EOL}${versionLink}${this.EOL}`;
     }
-    return updatedChangelog;
   }
 
   beforeRelease() {
@@ -95,15 +97,12 @@ class KeepAChangelog extends Plugin {
     if (isDryRun || keepUnreleased) return;
     const { version } = this.getContext();
     const formattedDate = getFormattedDate();
-    const releaseTitle = `${addUnreleased ? this.unreleasedTitle : this.EOL}${this.EOL}## [${version}] - ${formattedDate}${this.EOL}`;
+    const unreleasedTitle = addUnreleased ? this.unreleasedTitle : '';
+    const releaseTitle = `${unreleasedTitle}${this.EOL}${this.EOL}## [${version}] - ${formattedDate}`;
     let changelog = this.changelogContent.replace(this.unreleasedTitle, releaseTitle);
 
     if (addVersionUrl) {
-      const gitRemote = this.config.getContext("repo");
-      if (gitRemote && gitRemote.host && gitRemote.repository) {
-        const repositoryUrl = `https://${gitRemote.host}/${gitRemote.repository}`;
-        changelog = this.updateChangelogVersionUrls(changelog, repositoryUrl)
-      }
+      changelog = this.addVersionUrls(changelog);
     }
 
     fs.writeFileSync(this.changelogPath, changelog);
