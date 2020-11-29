@@ -20,9 +20,10 @@ mock({
   './CHANGELOG-EOL.md':
     '\r\n\r\n## [Unreleased]\r\n\r\n* Item A\r\n* Item B\r\n\r\n## [1.0.0] - 2020-05-02\r\n\r\n* Item C\r\n* Item D',
   './CHANGELOG-VERSION_URL.md':
-    '\n\n## [Unreleased]\n\n* Item A\n* Item B\n\n## [1.0.0] - 2020-05-02\n\n* Item C\n* Item D\n\n[Unreleased]: https://github.com/release-it/compare/1.0.0..HEAD\n[1.0.0]: https://github.com/release-it/compare/0.0.0...1.0.0',
+    '\n\n## [Unreleased]\n\n* Item A\n* Item B\n\n## [1.0.0] - 2020-05-02\n\n* Item C\n* Item D\n\n[Unreleased]: https://github.com/release-it/release-it/compare/1.0.0..HEAD\n[1.0.0]: https://github.com/release-it/release-it/compare/0.0.0...1.0.0',
   './CHANGELOG-VERSION_URL_UNRELEASED.md':
-    '\n\n## [Unreleased]\n\n* Item A\n* Item B\n\n## [1.0.0] - 2020-05-02\n\n* Item C\n* Item D\n\n[Unreleased]: https://github.com/release-it/compare/1.0.0..HEAD\n[1.0.0]: https://github.com/release-it/compare/0.0.0...1.0.0'
+    '\n\n## [Unreleased]\n\n* Item A\n* Item B\n\n## [1.0.0] - 2020-05-02\n\n* Item C\n* Item D\n\n[Unreleased]: https://github.com/user/project/compare/1.0.0..HEAD\n[1.0.0]: https://github.com/user/project/compare/0.0.0...1.0.0',
+  './CHANGELOG-VERSION_URL_NEW.md': '## [Unreleased]\n\n* Item A\n* Item B'
 });
 
 const readFile = file => fs.readFileSync(file).toString().trim();
@@ -70,7 +71,7 @@ test('should write changelog', async t => {
   assert.equal(plugin.getChangelog(), '* Item A\n* Item B');
   assert.match(
     readFile('./CHANGELOG-FULL.md'),
-    /## \[1\.0\.1\] - [0-9]{4}-[0-9]{2}-[0-9]{2}\n\n\* Item A\n\* Item B\n\n## \[1\.0\.0\] - 2020-05-02\n\n\* Item C\n*\* Item D/
+    /## \[1\.0\.1] - [0-9]{4}-[0-9]{2}-[0-9]{2}\n\n\* Item A\n\* Item B\n\n## \[1\.0\.0] - 2020-05-02\n\n\* Item C\n*\* Item D/
   );
 });
 
@@ -81,7 +82,7 @@ test('should write changelog even with `strictLatest: true`', async t => {
   assert.equal(plugin.getChangelog(), '* Item A\n* Item B');
   assert.match(
     readFile('./CHANGELOG-FULL.md'),
-    /## \[1\.0\.1\] - [0-9]{4}-[0-9]{2}-[0-9]{2}\n\n\* Item A\n\* Item B\n\n## \[1\.0\.0\] - 2020-05-02\n\n\* Item C\n*\* Item D/
+    /## \[1\.0\.1] - [0-9]{4}-[0-9]{2}-[0-9]{2}\n\n\* Item A\n\* Item B\n\n## \[1\.0\.0] - 2020-05-02\n\n\* Item C\n*\* Item D/
   );
 });
 
@@ -113,7 +114,7 @@ test('should write changelog (with different EOL)', async t => {
   assert.equal(plugin.getChangelog(), '* Item A\r\n* Item B');
   assert.match(
     readFile('./CHANGELOG-EOL.md'),
-    /^## \[1\.0\.1\] - [0-9]{4}-[0-9]{2}-[0-9]{2}\r\n\r\n\* Item A\r\n\* Item B\r\n\r\n## \[1\.0\.0\] - 2020-05-02\r\n\r\n\* Item C\r\n*\* Item D/
+    /^## \[1\.0\.1] - [0-9]{4}-[0-9]{2}-[0-9]{2}\r\n\r\n\* Item A\r\n\* Item B\r\n\r\n## \[1\.0\.0] - 2020-05-02\r\n\r\n\* Item C\r\n*\* Item D/
   );
 });
 
@@ -124,7 +125,7 @@ test('should write changelog and add unreleased section', async t => {
   assert.equal(plugin.getChangelog(), '* Item A\n* Item B');
   assert.match(
     readFile('./CHANGELOG-FULL.md'),
-    /^## \[Unreleased\]\n\n## \[1\.0\.1\] - [0-9]{4}-[0-9]{2}-[0-9]{2}\n\n\* Item A\n\* Item B\n\n## \[1\.0\.0\] - 2020-05-02\n\n\* Item C\n*\* Item D/
+    /^## \[Unreleased]\n\n## \[1\.0\.1] - [0-9]{4}-[0-9]{2}-[0-9]{2}\n\n\* Item A\n\* Item B\n\n## \[1\.0\.0] - 2020-05-02\n\n\* Item C\n*\* Item D/
   );
 });
 
@@ -135,14 +136,14 @@ test('should add unreleased section and links to the end of the file', async t =
     latestTag: '1.0.0',
     repo: {
       host: 'github.com',
-      repository: 'release-it'
+      repository: 'release-it/release-it'
     }
   });
   await runTasks(plugin);
   assert.equal(plugin.getChangelog(), '* Item A\n* Item B');
   assert.match(
     readFile('./CHANGELOG-VERSION_URL.md'),
-    /^## \[1\.0\.1] - [0-9]{4}-[0-9]{2}-[0-9]{2}\n\n\* Item A\n\* Item B\n\n## \[1\.0\.0] - 2020-05-02\n\n\* Item C\n*\* Item D\n\n\[Unreleased]: https:\/\/github\.com\/release-it\/compare\/1\.0\.1\.\.\.HEAD\n\[1\.0\.1]: https:\/\/github\.com\/release-it\/compare\/1\.0\.0\.\.\.1\.0\.1\n\[1\.0\.0]: https:\/\/github\.com\/release-it\/compare\/0\.0\.0\.\.\.1\.0\.0/
+    /^## \[1\.0\.1] - [0-9]{4}-[0-9]{2}-[0-9]{2}\n\n\* Item A\n\* Item B\n\n## \[1\.0\.0] - 2020-05-02\n\n\* Item C\n*\* Item D\n\n\[Unreleased]: https:\/\/github\.com\/release-it\/release-it\/compare\/1\.0\.1\.\.\.HEAD\n\[1\.0\.1]: https:\/\/github\.com\/release-it\/release-it\/compare\/1\.0\.0\.\.\.1\.0\.1\n\[1\.0\.0]: https:\/\/github\.com\/release-it\/release-it\/compare\/0\.0\.0\.\.\.1\.0\.0/
   );
 });
 
@@ -155,14 +156,14 @@ test('should add unreleased section and links to the end of the file', async t =
     latestTag: '1.0.0',
     repo: {
       host: 'github.com',
-      repository: 'release-it'
+      repository: 'user/project'
     }
   });
   await runTasks(plugin);
   assert.equal(plugin.getChangelog(), '* Item A\n* Item B');
   assert.match(
     readFile('./CHANGELOG-VERSION_URL_UNRELEASED.md'),
-    /^## \[Unreleased\]\n\n## \[1\.0\.1] - [0-9]{4}-[0-9]{2}-[0-9]{2}\n\n\* Item A\n\* Item B\n\n## \[1\.0\.0] - 2020-05-02\n\n\* Item C\n*\* Item D\n\n\[Unreleased]: https:\/\/github\.com\/release-it\/compare\/1\.0\.1\.\.\.HEAD\n\[1\.0\.1]: https:\/\/github\.com\/release-it\/compare\/1\.0\.0\.\.\.1\.0\.1\n\[1\.0\.0]: https:\/\/github\.com\/release-it\/compare\/0\.0\.0\.\.\.1\.0\.0/
+    /^## \[Unreleased]\n\n## \[1\.0\.1] - [0-9]{4}-[0-9]{2}-[0-9]{2}\n\n\* Item A\n\* Item B\n\n## \[1\.0\.0] - 2020-05-02\n\n\* Item C\n*\* Item D\n\n\[Unreleased]: https:\/\/github\.com\/user\/project\/compare\/1\.0\.1\.\.\.HEAD\n\[1\.0\.1]: https:\/\/github\.com\/user\/project\/compare\/1\.0\.0\.\.\.1\.0\.1\n\[1\.0\.0]: https:\/\/github\.com\/user\/project\/compare\/0\.0\.0\.\.\.1\.0\.0/
   );
 });
 
