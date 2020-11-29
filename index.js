@@ -87,7 +87,7 @@ class KeepAChangelog extends Plugin {
     if (updatedChangelog.includes(latestVersionLink)) {
       return updatedChangelog.replace(latestVersionLink, `${releaseLink}${this.EOL}${latestVersionLink}`);
     } else {
-      return `${updatedChangelog}${this.EOL}${releaseLink}${this.EOL}`;
+      return `${updatedChangelog}${this.EOL}${releaseLink}`;
     }
   }
 
@@ -97,15 +97,15 @@ class KeepAChangelog extends Plugin {
     if (isDryRun || keepUnreleased) return;
     const { version } = this.getContext();
     const formattedDate = getFormattedDate();
-    const unreleasedTitle = addUnreleased ? this.unreleasedTitle : '';
-    const releaseTitle = `${unreleasedTitle}${this.EOL}${this.EOL}## [${version}] - ${formattedDate}`;
+    const unreleasedTitle = addUnreleased ? this.unreleasedTitle + this.EOL + this.EOL : '';
+    const releaseTitle = `${unreleasedTitle}## [${version}] - ${formattedDate}`;
     let changelog = this.changelogContent.replace(this.unreleasedTitle, releaseTitle);
 
     if (addVersionUrl) {
       changelog = this.addVersionUrls(changelog);
     }
 
-    fs.writeFileSync(this.changelogPath, changelog + this.EOL);
+    fs.writeFileSync(this.changelogPath, changelog.trim() + this.EOL);
   }
 }
 
