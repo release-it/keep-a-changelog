@@ -87,7 +87,7 @@ class KeepAChangelog extends Plugin {
     if (updatedChangelog.includes(latestVersionLink)) {
       return updatedChangelog.replace(latestVersionLink, `${releaseLink}${this.EOL}${latestVersionLink}`);
     } else {
-      return `${updatedChangelog}${this.EOL}${versionLink}${this.EOL}`;
+      return `${updatedChangelog}${this.EOL}${releaseLink}${this.EOL}`;
     }
   }
 
