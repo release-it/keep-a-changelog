@@ -105,7 +105,7 @@ class KeepAChangelog extends Plugin {
       changelog = this.addVersionUrls(changelog);
     }
 
-    fs.writeFileSync(this.changelogPath, changelog);
+    fs.writeFileSync(this.changelogPath, changelog + this.EOL);
   }
 }
 
