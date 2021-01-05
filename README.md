@@ -28,3 +28,4 @@ In [release-it](https://github.com/release-it/release-it) config:
 | addUnreleased  | `false`        | It leaves "Unreleased" title row if set to `true`.                                                                                               |
 | keepUnreleased | `false`        | It leaves "Unreleased" title row unchanged if set to `true`.                                                                                     |
 | addVersionUrl  | `false`        | Links the version to the according changeset.                                                                                                    |
+| head  | `'HEAD'`        | The git revision the new version tag is compared to in the Unreleased URL.                                                                               |
