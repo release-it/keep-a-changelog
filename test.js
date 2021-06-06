@@ -23,6 +23,8 @@ mock({
   './CHANGELOG-UNRELEASED.md': '## [Unreleased]\n\n* Item A\n* Item B\n\n## [1.0.0] - 2020-05-02\n\n* Item C\n* Item D',
   './CHANGELOG-VERSION_URL.md':
     '## [Unreleased]\n\n* Item A\n* Item B\n\n## [1.0.0] - 2020-05-02\n\n* Item C\n* Item D\n\n[Unreleased]: https://github.com/release-it/release-it/compare/1.0.0..HEAD\n[1.0.0]: https://github.com/release-it/release-it/compare/0.0.0...1.0.0',
+    './CHANGELOG-VERSION_URL_HEAD.md':
+      '## [Unreleased]\n\n* Item A\n* Item B\n\n## [1.0.0] - 2020-05-02\n\n* Item C\n* Item D\n\n[Unreleased]: https://github.com/release-it/release-it/compare/1.0.0..main\n[1.0.0]: https://github.com/release-it/release-it/compare/0.0.0...1.0.0',
   './CHANGELOG-VERSION_URL_UNRELEASED.md':
     '## [Unreleased]\n\n* Item A\n* Item B\n\n## [1.0.0] - 2020-05-02\n\n* Item C\n* Item D\n\n[Unreleased]: https://github.com/user/project/compare/1.0.0..HEAD\n[1.0.0]: https://github.com/user/project/compare/0.0.0...1.0.0',
   './CHANGELOG-VERSION_URL_NEW.md': '## [Unreleased]\n\n* Item A\n* Item B'
@@ -143,6 +145,24 @@ test('should add links to the end of the file', async t => {
   assert.match(
     readFile('./CHANGELOG-VERSION_URL.md'),
     /^## \[1\.0\.1] - [0-9]{4}-[0-9]{2}-[0-9]{2}\n\n\* Item A\n\* Item B\n\n## \[1\.0\.0] - 2020-05-02\n\n\* Item C\n*\* Item D\n\n\[Unreleased]: https:\/\/github\.com\/release-it\/release-it\/compare\/1\.0\.1\.\.\.HEAD\n\[1\.0\.1]: https:\/\/github\.com\/release-it\/release-it\/compare\/1\.0\.0\.\.\.1\.0\.1\n\[1\.0\.0]: https:\/\/github\.com\/release-it\/release-it\/compare\/0\.0\.0\.\.\.1\.0\.0\n$/
+  );
+});
+
+test('should add links with custom head to the end of the file', async t => {
+  const options = { [namespace]: { filename: 'CHANGELOG-VERSION_URL_HEAD.md', addVersionUrl: true, head: 'main' } };
+  const plugin = factory(Plugin, { namespace, options });
+  plugin.config.setContext({
+    latestTag: '1.0.0',
+    repo: {
+      host: 'github.com',
+      repository: 'release-it/release-it'
+    }
+  });
+  await runTasks(plugin);
+  assert.equal(plugin.getChangelog(), '* Item A\n* Item B');
+  assert.match(
+    readFile('./CHANGELOG-VERSION_URL_HEAD.md'),
+    /^## \[1\.0\.1] - [0-9]{4}-[0-9]{2}-[0-9]{2}\n\n\* Item A\n\* Item B\n\n## \[1\.0\.0] - 2020-05-02\n\n\* Item C\n*\* Item D\n\n\[Unreleased]: https:\/\/github\.com\/release-it\/release-it\/compare\/1\.0\.1\.\.\.main\n\[1\.0\.1]: https:\/\/github\.com\/release-it\/release-it\/compare\/1\.0\.0\.\.\.1\.0\.1\n\[1\.0\.0]: https:\/\/github\.com\/release-it\/release-it\/compare\/0\.0\.0\.\.\.1\.0\.0\n$/
   );
 });
 

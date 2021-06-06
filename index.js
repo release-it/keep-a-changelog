@@ -13,13 +13,14 @@ const getFormattedDate = () => {
 class KeepAChangelog extends Plugin {
   async init() {
     await super.init();
-    const { filename, strictLatest, addUnreleased, keepUnreleased, addVersionUrl } = this.options;
+    const { filename, strictLatest, addUnreleased, keepUnreleased, addVersionUrl, head } = this.options;
 
     this.filename = filename || 'CHANGELOG.md';
     this.strictLatest = strictLatest === undefined ? true : Boolean(strictLatest);
     this.addUnreleased = addUnreleased === undefined ? false : Boolean(addUnreleased);
     this.keepUnreleased = keepUnreleased === undefined ? false : Boolean(keepUnreleased);
     this.addVersionUrl = addVersionUrl === undefined ? false : Boolean(addVersionUrl);
+    this.head = head || 'HEAD'
 
     this.changelogPath = path.resolve(this.filename);
     this.changelogContent = fs.readFileSync(this.changelogPath, 'utf-8');
@@ -72,10 +73,10 @@ class KeepAChangelog extends Plugin {
     const repositoryUrl = `https://${repo.host}/${repo.repository}`;
 
     // Add or update the Unreleased link
-    const unreleasedUrl = `${repositoryUrl}/compare/${tagName}...HEAD`;
+    const unreleasedUrl = `${repositoryUrl}/compare/${tagName}...${this.head}`;
     const unreleasedLink = `[Unreleased]: ${unreleasedUrl}`;
     if (updatedChangelog.includes('[Unreleased]:')) {
-      updatedChangelog = updatedChangelog.replace(/\[Unreleased\]\:.*HEAD/, unreleasedLink);
+      updatedChangelog = updatedChangelog.replace(new RegExp('\\[Unreleased\\]\\:.*' + this.head), unreleasedLink);
     } else {
       updatedChangelog = `${updatedChangelog}${this.EOL}${this.EOL}${unreleasedLink}`;
     }
