@@ -75,8 +75,9 @@ class KeepAChangelog extends Plugin {
     // Add or update the Unreleased link
     const unreleasedUrl = `${repositoryUrl}/compare/${tagName}...${this.head}`;
     const unreleasedLink = `[Unreleased]: ${unreleasedUrl}`;
-    if (updatedChangelog.includes('[Unreleased]:')) {
-      updatedChangelog = updatedChangelog.replace(new RegExp('\\[Unreleased\\]\\:.*' + this.head), unreleasedLink);
+    const hasUnreleasedLink = /^\[(Unreleased)\]\: .*$/im
+    if (hasUnreleasedLink.test(updatedChangelog)) {
+      updatedChangelog = updatedChangelog.replace(hasUnreleasedLink, '[$1]: ' + unreleasedUrl);
     } else {
       updatedChangelog = `${updatedChangelog}${this.EOL}${this.EOL}${unreleasedLink}`;
     }
