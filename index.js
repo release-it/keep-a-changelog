@@ -13,7 +13,7 @@ const getFormattedDate = () => {
 class KeepAChangelog extends Plugin {
   async init() {
     await super.init();
-    const { filename, strictLatest, addUnreleased, keepUnreleased, addVersionUrl, head } = this.options;
+    const { filename, strictLatest, addUnreleased, keepUnreleased, addVersionUrl, head, isGitLab } = this.options;
 
     this.filename = filename || 'CHANGELOG.md';
     this.strictLatest = strictLatest === undefined ? true : Boolean(strictLatest);
@@ -21,6 +21,7 @@ class KeepAChangelog extends Plugin {
     this.keepUnreleased = keepUnreleased === undefined ? false : Boolean(keepUnreleased);
     this.addVersionUrl = addVersionUrl === undefined ? false : Boolean(addVersionUrl);
     this.head = head || 'HEAD'
+    this.isGitLab = isGitLab === undefined ? 'auto' : isGitLab;
 
     this.changelogPath = path.resolve(this.filename);
     this.changelogContent = fs.readFileSync(this.changelogPath, 'utf-8');
@@ -72,8 +73,17 @@ class KeepAChangelog extends Plugin {
 
     const repositoryUrl = `https://${repo.host}/${repo.repository}`;
 
+    let gitLabPrefix = '';
+    if (this.isGitLab === 'auto') {
+      if (repo.host.includes('gitlab')) {
+        gitLabPrefix = '/-';
+      }
+    } else if (this.isGitLab) {
+      gitLabPrefix = '/-';
+    }
+
     // Add or update the Unreleased link
-    const unreleasedUrl = `${repositoryUrl}/compare/${tagName}...${this.head}`;
+    const unreleasedUrl = `${repositoryUrl}${gitLabPrefix}/compare/${tagName}...${this.head}`;
     const unreleasedLink = `[Unreleased]: ${unreleasedUrl}`;
     if (updatedChangelog.includes('[Unreleased]:')) {
       updatedChangelog = updatedChangelog.replace(new RegExp('\\[Unreleased\\]\\:.*' + this.head), unreleasedLink);
@@ -83,7 +93,7 @@ class KeepAChangelog extends Plugin {
 
     // Add a link for the new version
     const latestVersionLink = `[${latestVersion}]:`;
-    const releaseUrl = `${repositoryUrl}/compare/${latestTag}...${tagName}`;
+    const releaseUrl = `${repositoryUrl}${gitLabPrefix}/compare/${latestTag}...${tagName}`;
     const releaseLink = `[${version}]: ${releaseUrl}`;
     if (updatedChangelog.includes(latestVersionLink)) {
       return updatedChangelog.replace(latestVersionLink, `${releaseLink}${this.EOL}${latestVersionLink}`);

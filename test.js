@@ -27,7 +27,13 @@ mock({
       '## [Unreleased]\n\n* Item A\n* Item B\n\n## [1.0.0] - 2020-05-02\n\n* Item C\n* Item D\n\n[Unreleased]: https://github.com/release-it/release-it/compare/1.0.0..main\n[1.0.0]: https://github.com/release-it/release-it/compare/0.0.0...1.0.0',
   './CHANGELOG-VERSION_URL_UNRELEASED.md':
     '## [Unreleased]\n\n* Item A\n* Item B\n\n## [1.0.0] - 2020-05-02\n\n* Item C\n* Item D\n\n[Unreleased]: https://github.com/user/project/compare/1.0.0..HEAD\n[1.0.0]: https://github.com/user/project/compare/0.0.0...1.0.0',
-  './CHANGELOG-VERSION_URL_NEW.md': '## [Unreleased]\n\n* Item A\n* Item B'
+  './CHANGELOG-VERSION_URL_NEW.md': '## [Unreleased]\n\n* Item A\n* Item B',
+  './CHANGELOG-VERSION_GITLAB_AUTO.md':
+    '## [Unreleased]\n\n* Item A\n* Item B\n\n## [1.0.0] - 2020-05-02\n\n* Item C\n* Item D\n\n[Unreleased]: https://gitlab.com/release-it/release-it/-/compare/1.0.0..HEAD\n[1.0.0]: https://gitlab.com/release-it/release-it/-/compare/0.0.0...1.0.0',
+    './CHANGELOG-VERSION_GITLAB.md':
+    '## [Unreleased]\n\n* Item A\n* Item B\n\n## [1.0.0] - 2020-05-02\n\n* Item C\n* Item D\n\n[Unreleased]: https://gitlab.com/release-it/release-it/-/compare/1.0.0..HEAD\n[1.0.0]: https://gitlab.com/release-it/release-it/-/compare/0.0.0...1.0.0',
+    './CHANGELOG-VERSION_OLD_GITLAB.md':
+    '## [Unreleased]\n\n* Item A\n* Item B\n\n## [1.0.0] - 2020-05-02\n\n* Item C\n* Item D\n\n[Unreleased]: https://gitlab.com/release-it/release-it/compare/1.0.0..HEAD\n[1.0.0]: https://gitlab.com/release-it/release-it/compare/0.0.0...1.0.0',
 });
 
 const readFile = file => fs.readFileSync(file).toString();
@@ -204,5 +210,59 @@ test('should add link to the end of a new changelog', async t => {
   assert.match(
     readFile('./CHANGELOG-VERSION_URL_NEW.md'),
     /^## \[1\.0\.0] - [0-9]{4}-[0-9]{2}-[0-9]{2}\n\n\* Item A\n\* Item B\n\n\[Unreleased]: https:\/\/github\.com\/user\/project\/compare\/1\.0\.0\.\.\.HEAD\n\[1.0.0]: https:\/\/github\.com\/user\/project\/compare\/0\.0\.0\.\.\.1\.0\.0\n$/
+  );
+});
+
+test('should add links to the end of the file for GitLab automatically', async t => {
+  const options = { [namespace]: { filename: 'CHANGELOG-VERSION_GITLAB_AUTO.md', addVersionUrl: true } };
+  const plugin = factory(Plugin, { namespace, options });
+  plugin.config.setContext({
+    latestTag: '1.0.0',
+    repo: {
+      host: 'gitlab.com',
+      repository: 'release-it/release-it'
+    }
+  });
+  await runTasks(plugin);
+  assert.equal(plugin.getChangelog(), '* Item A\n* Item B');
+  assert.match(
+    readFile('./CHANGELOG-VERSION_GITLAB_AUTO.md'),
+    /^## \[1\.0\.1] - [0-9]{4}-[0-9]{2}-[0-9]{2}\n\n\* Item A\n\* Item B\n\n## \[1\.0\.0] - 2020-05-02\n\n\* Item C\n*\* Item D\n\n\[Unreleased]: https:\/\/gitlab\.com\/release-it\/release-it\/-\/compare\/1\.0\.1\.\.\.HEAD\n\[1\.0\.1]: https:\/\/gitlab\.com\/release-it\/release-it\/-\/compare\/1\.0\.0\.\.\.1\.0\.1\n\[1\.0\.0]: https:\/\/gitlab\.com\/release-it\/release-it\/-\/compare\/0\.0\.0\.\.\.1\.0\.0\n$/
+  );
+});
+
+test('should add links to the end of the file for GitLab explicitly', async t => {
+  const options = { [namespace]: { filename: 'CHANGELOG-VERSION_GITLAB.md', addVersionUrl: true, isGitLab: true } };
+  const plugin = factory(Plugin, { namespace, options });
+  plugin.config.setContext({
+    latestTag: '1.0.0',
+    repo: {
+      host: 'example.com',
+      repository: 'release-it/release-it'
+    }
+  });
+  await runTasks(plugin);
+  assert.equal(plugin.getChangelog(), '* Item A\n* Item B');
+  assert.match(
+    readFile('./CHANGELOG-VERSION_GITLAB.md'),
+    /^## \[1\.0\.1] - [0-9]{4}-[0-9]{2}-[0-9]{2}\n\n\* Item A\n\* Item B\n\n## \[1\.0\.0] - 2020-05-02\n\n\* Item C\n*\* Item D\n\n\[Unreleased]: https:\/\/example\.com\/release-it\/release-it\/-\/compare\/1\.0\.1\.\.\.HEAD\n\[1\.0\.1]: https:\/\/example\.com\/release-it\/release-it\/-\/compare\/1\.0\.0\.\.\.1\.0\.1\n\[1\.0\.0]: https:\/\/gitlab\.com\/release-it\/release-it\/-\/compare\/0\.0\.0\.\.\.1\.0\.0\n$/
+  );
+});
+
+test('should add links to the end of the file for old GitLab', async t => {
+  const options = { [namespace]: { filename: 'CHANGELOG-VERSION_OLD_GITLAB.md', addVersionUrl: true, isGitLab: false } };
+  const plugin = factory(Plugin, { namespace, options });
+  plugin.config.setContext({
+    latestTag: '1.0.0',
+    repo: {
+      host: 'gitlab.com',
+      repository: 'release-it/release-it'
+    }
+  });
+  await runTasks(plugin);
+  assert.equal(plugin.getChangelog(), '* Item A\n* Item B');
+  assert.match(
+    readFile('./CHANGELOG-VERSION_OLD_GITLAB.md'),
+    /^## \[1\.0\.1] - [0-9]{4}-[0-9]{2}-[0-9]{2}\n\n\* Item A\n\* Item B\n\n## \[1\.0\.0] - 2020-05-02\n\n\* Item C\n*\* Item D\n\n\[Unreleased]: https:\/\/gitlab\.com\/release-it\/release-it\/compare\/1\.0\.1\.\.\.HEAD\n\[1\.0\.1]: https:\/\/gitlab\.com\/release-it\/release-it\/compare\/1\.0\.0\.\.\.1\.0\.1\n\[1\.0\.0]: https:\/\/gitlab\.com\/release-it\/release-it\/compare\/0\.0\.0\.\.\.1\.0\.0\n$/
   );
 });
