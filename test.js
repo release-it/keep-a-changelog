@@ -23,8 +23,8 @@ mock({
   './CHANGELOG-UNRELEASED.md': '## [Unreleased]\n\n* Item A\n* Item B\n\n## [1.0.0] - 2020-05-02\n\n* Item C\n* Item D',
   './CHANGELOG-VERSION_URL.md':
     '## [Unreleased]\n\n* Item A\n* Item B\n\n## [1.0.0] - 2020-05-02\n\n* Item C\n* Item D\n\n[Unreleased]: https://github.com/release-it/release-it/compare/1.0.0..HEAD\n[1.0.0]: https://github.com/release-it/release-it/compare/0.0.0...1.0.0',
-    './CHANGELOG-VERSION_URL_HEAD.md':
-      '## [Unreleased]\n\n* Item A\n* Item B\n\n## [1.0.0] - 2020-05-02\n\n* Item C\n* Item D\n\n[Unreleased]: https://github.com/release-it/release-it/compare/1.0.0..main\n[1.0.0]: https://github.com/release-it/release-it/compare/0.0.0...1.0.0',
+  './CHANGELOG-VERSION_URL_HEAD.md':
+    '## [Unreleased]\n\n* Item A\n* Item B\n\n## [1.0.0] - 2020-05-02\n\n* Item C\n* Item D\n\n[Unreleased]: https://github.com/release-it/release-it/compare/1.0.0..main\n[1.0.0]: https://github.com/release-it/release-it/compare/0.0.0...1.0.0',
   './CHANGELOG-VERSION_URL_UNRELEASED.md':
     '## [Unreleased]\n\n* Item A\n* Item B\n\n## [1.0.0] - 2020-05-02\n\n* Item C\n* Item D\n\n[Unreleased]: https://github.com/user/project/compare/1.0.0..HEAD\n[1.0.0]: https://github.com/user/project/compare/0.0.0...1.0.0',
   './CHANGELOG-VERSION_URL_NEW.md': '## [Unreleased]\n\n* Item A\n* Item B'
@@ -53,10 +53,10 @@ test('should throw for empty "unreleased" section', async t => {
 });
 
 test('should not throw for empty "unreleased" section when no-increment flag is set', async t => {
-  const options = { 'increment': false, [namespace]: { filename: 'CHANGELOG-EMPTY.md' } };
+  const options = { increment: false, [namespace]: { filename: 'CHANGELOG-EMPTY.md' } };
   const plugin = factory(Plugin, { namespace, options });
   await runTasks(plugin);
-  assert.equal(plugin.getChangelog(), readFile('./CHANGELOG-EMPTY.md'))
+  assert.equal(plugin.getChangelog(), readFile('./CHANGELOG-EMPTY.md'));
 });
 
 test('should throw for missing section for previous release', async t => {

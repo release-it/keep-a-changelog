@@ -20,7 +20,7 @@ class KeepAChangelog extends Plugin {
     this.addUnreleased = addUnreleased === undefined ? false : Boolean(addUnreleased);
     this.keepUnreleased = keepUnreleased === undefined ? false : Boolean(keepUnreleased);
     this.addVersionUrl = addVersionUrl === undefined ? false : Boolean(addVersionUrl);
-    this.head = head || 'HEAD'
+    this.head = head || 'HEAD';
 
     this.changelogPath = path.resolve(this.filename);
     this.changelogContent = fs.readFileSync(this.changelogPath, 'utf-8');
@@ -81,7 +81,7 @@ class KeepAChangelog extends Plugin {
     // Add or update the Unreleased link
     const unreleasedUrl = `${repositoryUrl}/compare/${tagName}...${this.head}`;
     const unreleasedLink = `[Unreleased]: ${unreleasedUrl}`;
-    const hasUnreleasedLink = /^\[(Unreleased)\]\: .*$/im
+    const hasUnreleasedLink = /^\[(Unreleased)\]\: .*$/im;
     if (hasUnreleasedLink.test(updatedChangelog)) {
       updatedChangelog = updatedChangelog.replace(hasUnreleasedLink, '[$1]: ' + unreleasedUrl);
     } else {
