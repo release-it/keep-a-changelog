@@ -29,6 +29,8 @@ mock({
     '## [Unreleased]\n\n* Item A\n* Item B\n\n## [1.0.0] - 2020-05-02\n\n* Item C\n* Item D\n\n[unreleased]: https://github.com/release-it/release-it/compare/1.0.0..main\n[1.0.0]: https://github.com/release-it/release-it/compare/0.0.0...1.0.0',
   './CHANGELOG-VERSION_URL_UNRELEASED.md':
     '## [Unreleased]\n\n* Item A\n* Item B\n\n## [1.0.0] - 2020-05-02\n\n* Item C\n* Item D\n\n[unreleased]: https://github.com/user/project/compare/1.0.0..HEAD\n[1.0.0]: https://github.com/user/project/compare/0.0.0...1.0.0',
+  './CHANGELOG-VERSION_URL_UNRELEASED_TITLE_CASE.md':
+    '## [Unreleased]\n\n* Item A\n* Item B\n\n## [1.0.0] - 2020-05-02\n\n* Item C\n* Item D\n\n[Unreleased]: https://github.com/user/project/compare/1.0.0..HEAD\n[1.0.0]: https://github.com/user/project/compare/0.0.0...1.0.0',
   './CHANGELOG-VERSION_URL_NEW.md': '## [Unreleased]\n\n* Item A\n* Item B\n'
 });
 
@@ -223,13 +225,33 @@ test('should add unreleased section and links to the end of the file', async t =
   );
 });
 
+test('should match an existing unreleased link in title case', async t => {
+  const options = {
+    [namespace]: { filename: 'CHANGELOG-VERSION_URL_UNRELEASED_TITLE_CASE.md', addVersionUrl: true, addUnreleased: true }
+  };
+  const plugin = factory(Plugin, { namespace, options });
+  plugin.config.setContext({
+    latestTag: '1.0.0',
+    repo: {
+      host: 'github.com',
+      repository: 'user/project'
+    }
+  });
+  await runTasks(plugin);
+  assert.equal(plugin.getChangelog(), '* Item A\n* Item B');
+  assert.match(
+    readFile('./CHANGELOG-VERSION_URL_UNRELEASED_TITLE_CASE.md'),
+    /^## \[Unreleased]\n\n## \[1\.0\.1] - [0-9]{4}-[0-9]{2}-[0-9]{2}\n\n\* Item A\n\* Item B\n\n## \[1\.0\.0] - 2020-05-02\n\n\* Item C\n*\* Item D\n\n\[unreleased]: https:\/\/github\.com\/user\/project\/compare\/1\.0\.1\.\.\.HEAD\n\[1\.0\.1]: https:\/\/github\.com\/user\/project\/compare\/1\.0\.0\.\.\.1\.0\.1\n\[1\.0\.0]: https:\/\/github\.com\/user\/project\/compare\/0\.0\.0\.\.\.1\.0\.0\n/
+  );
+});
+
 // This test requires a change to runTasks, as it doesn't currently allow latestTag to be undefined/null.
-test.skip('should add links to the end of a new changelog', async t => {
+test('should add links to the end of a new changelog', async t => {
   const options = {
     [namespace]: { filename: 'CHANGELOG-VERSION_URL_NEW.md', addVersionUrl: true, strictLatest: false }
   };
   const plugin = factory(Plugin, { namespace, options });
-  sinon.stub(plugin, 'getLatestVersion').returns(undefined);
+  sinon.stub(plugin, 'getLatestVersion').returns('0.0.0');
   plugin.config.setContext({
     latestTag: undefined,
     increment: 'major',
