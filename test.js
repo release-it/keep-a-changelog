@@ -245,7 +245,6 @@ test('should match an existing unreleased link in title case', async t => {
   );
 });
 
-// This test requires a change to runTasks, as it doesn't currently allow latestTag to be undefined/null.
 test('should add links to the end of a new changelog', async t => {
   const options = {
     [namespace]: { filename: 'CHANGELOG-VERSION_URL_NEW.md', addVersionUrl: true, strictLatest: false }
