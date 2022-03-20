@@ -11,31 +11,33 @@ const getFormattedDate = () => {
   return `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`;
 };
 
+/**
+ * Default formats used for creating version URLs. Uses GitHub URL formats, e.g.
+ *
+ * https://github.com/release-it/release-it/compare/1.0.0...HEAD
+ * https://github.com/release-it/release-it/compare/0.0.0...1.0.0
+ * https://github.com/release-it/release-it/releases/tag/1.0.0
+ */
+const defaultVersionUrlFormats = {
+  repositoryUrl: 'https://{host}/{repository}',
+  unreleasedUrl: '{repositoryUrl}/compare/{tagName}...{head}',
+  versionUrl: '{repositoryUrl}/compare/{previousTag}...{tagName}',
+  firstVersionUrl: '{repositoryUrl}/releases/tag/{tagName}'
+};
+
 class KeepAChangelog extends Plugin {
   async init() {
     await super.init();
-    const {
-      filename,
-      strictLatest,
-      addUnreleased,
-      keepUnreleased,
-      addVersionUrl,
-      repositoryUrlFormat,
-      unreleasedVersionUrlFormat,
-      releasedVersionUrlFormat,
-      firstVersionUrlFormat,
-      head
-    } = this.options;
+    const { filename, strictLatest, addUnreleased, keepUnreleased, addVersionUrl, versionUrlFormats, head } = this.options;
 
     this.filename = filename || 'CHANGELOG.md';
     this.strictLatest = strictLatest === undefined ? true : Boolean(strictLatest);
     this.addUnreleased = addUnreleased === undefined ? false : Boolean(addUnreleased);
     this.keepUnreleased = keepUnreleased === undefined ? false : Boolean(keepUnreleased);
     this.addVersionUrl = addVersionUrl === undefined ? false : Boolean(addVersionUrl);
-    this.repositoryUrlFormat = repositoryUrlFormat || 'https://{host}/{repository}';
-    this.unreleasedVersionUrlFormat = unreleasedVersionUrlFormat || '{repositoryUrl}/compare/{tagName}...{head}';
-    this.releasedVersionUrlFormat = releasedVersionUrlFormat || '{repositoryUrl}/compare/{previousTag}...{tagName}';
-    this.firstVersionUrlFormat = firstVersionUrlFormat || '{repositoryUrl}/releases/tag/{tagName}';
+    this.versionUrlFormats = versionUrlFormats
+      ? { ...defaultVersionUrlFormats, ...versionUrlFormats }
+      : defaultVersionUrlFormats;
     this.head = head || 'HEAD';
 
     this.changelogPath = path.resolve(this.filename);
@@ -86,11 +88,11 @@ class KeepAChangelog extends Plugin {
     const { version, latestVersion, tagName, latestTag, repo } = this.config.getContext();
     let updatedChangelog = changelog;
 
-    const repositoryUrl = format(this.repositoryUrlFormat, repo);
+    const repositoryUrl = format(this.versionUrlFormats.repositoryUrl, repo);
     const unreleasedLinkRegex = new RegExp(`\\[unreleased\\]\\:.*${this.head}`, 'i');
 
     // Add or update the Unreleased link
-    const unreleasedUrl = format(this.unreleasedVersionUrlFormat, { repositoryUrl, tagName, head: this.head });
+    const unreleasedUrl = format(this.versionUrlFormats.unreleasedUrl, { repositoryUrl, tagName, head: this.head });
     const unreleasedLink = `[unreleased]: ${unreleasedUrl}`;
     if (unreleasedLinkRegex.test(updatedChangelog)) {
       updatedChangelog = updatedChangelog.replace(unreleasedLinkRegex, unreleasedLink);
@@ -100,19 +102,19 @@ class KeepAChangelog extends Plugin {
 
     // Add a link for the first tagged version
     if (!latestTag) {
-      const firstVersionUrl = format(this.firstVersionUrlFormat, { repositoryUrl, tagName });
+      const firstVersionUrl = format(this.versionUrlFormats.firstVersionUrl, { repositoryUrl, tagName });
       const firstVersionLink = `[${version}]: ${firstVersionUrl}`;
       return `${updatedChangelog}${this.EOL}${firstVersionLink}`;
     }
 
     // Add a link for the new version
     const latestVersionLink = `[${latestVersion}]:`;
-    const releaseUrl = format(this.releasedVersionUrlFormat, { repositoryUrl, previousTag: latestTag, tagName });
-    const releaseLink = `[${version}]: ${releaseUrl}`;
+    const versionUrl = format(this.versionUrlFormats.versionUrl, { repositoryUrl, previousTag: latestTag, tagName });
+    const versionLink = `[${version}]: ${versionUrl}`;
     if (updatedChangelog.includes(latestVersionLink)) {
-      return updatedChangelog.replace(latestVersionLink, `${releaseLink}${this.EOL}${latestVersionLink}`);
+      return updatedChangelog.replace(latestVersionLink, `${versionLink}${this.EOL}${latestVersionLink}`);
     } else {
-      return `${updatedChangelog}${this.EOL}${releaseLink}`;
+      return `${updatedChangelog}${this.EOL}${versionLink}`;
     }
   }
 
