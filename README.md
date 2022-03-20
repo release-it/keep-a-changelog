@@ -21,11 +21,15 @@ In [release-it](https://github.com/release-it/release-it) config:
 
 ## Options
 
-| option         | default value    | description                                                                                                                                      |
-| -------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| filename       | `'CHANGELOG.md'` | File with changelogs.                                                                                                                            |
-| strictLatest   | `true`           | Entry of latest version must be present in order to get correct changelog. Set this option to `false` if you expect latest version without logs. |
-| addUnreleased  | `false`          | It leaves "Unreleased" title row if set to `true`.                                                                                               |
-| keepUnreleased | `false`          | It leaves "Unreleased" title row unchanged if set to `true`.                                                                                     |
-| addVersionUrl  | `false`          | Links the version to the according changeset.                                                                                                    |
-| head           | `'HEAD'`         | The git revision the new version tag is compared to in the Unreleased URL.                                                                       |
+| option                     | default value                                         | description                                                                                                                                      |
+| -------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| filename                   | `'CHANGELOG.md'`                                      | File with changelogs.                                                                                                                            |
+| strictLatest               | `true`                                                | Entry of latest version must be present in order to get correct changelog. Set this option to `false` if you expect latest version without logs. |
+| addUnreleased              | `false`                                               | It leaves "Unreleased" title row if set to `true`.                                                                                               |
+| keepUnreleased             | `false`                                               | It leaves "Unreleased" title row unchanged if set to `true`.                                                                                     |
+| addVersionUrl              | `false`                                               | Links the version to the according changeset. Uses GitHub-compatible URLs by default, see other options to configure the URL format.             |
+| repositoryUrlFormat        | `'https://{host}/{repository}'`                       | The format of the repository URL. Used when `addVersionUrl` is set to `true`.                                                                    |
+| unreleasedVersionUrlFormat | `'{repositoryUrl}/compare/{tagName}...{head}'`        | The format of the `[unreleased]` section URL. Used when `addVersionUrl` is set to `true`.                                                        |
+| releasedVersionUrlFormat   | `'{repositoryUrl}/compare/{previousTag}...{tagName}'` | The format of a release version URL. Used when `addVersionUrl` is set to `true`.                                                                 |
+| firstVersionUrlFormat      | `'{repositoryUrl}/releases/tag/{tagName}'`            | The format of the first release version URL, i.e. when no previous tags have been released. Used when `addVersionUrl` is set to `true`.          |
+| head                       | `'HEAD'`                                              | The git revision the new version tag is compared to in the Unreleased URL.                                                                       |

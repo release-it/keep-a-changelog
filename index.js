@@ -2,38 +2,13 @@ const { Plugin } = require('release-it');
 const fs = require('fs');
 const path = require('path');
 const detectNewline = require('detect-newline');
+var format = require('string-template');
 
 const pad = num => ('0' + num).slice(-2);
 
 const getFormattedDate = () => {
   const today = new Date();
   return `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`;
-};
-
-const getGitHubRepoUrl = repo => `https://${repo.host}/${repo.repository}`;
-
-/**
- * Creates a URL for the [unreleased] section of the changelog.
- * e.g. https://github.com/release-it/release-it/compare/1.0.0...HEAD
- */
-const getGitHubUnreleasedVersionUrl = ({ repo, tagName, head }) => {
-  return `${getGitHubRepoUrl(repo)}/compare/${tagName}...${head}`;
-};
-
-/**
- * Creates a URL for the first tagged version.
- * e.g. https://github.com/release-it/release-it/releases/tag/1.0.0
- */
-const getGitHubFirstVersionUrl = ({ repo, tagName }) => {
-  return `${getGitHubRepoUrl(repo)}/releases/tag/${tagName}`;
-};
-
-/**
- * Creates a URL for a released version based on tag name and latest tag.
- * e.g. https://github.com/release-it/release-it/compare/0.0.0...1.0.0
- */
-const getGitHubReleasedVersionUrl = ({ repo, latestTag, tagName }) => {
-  return `${getGitHubRepoUrl(repo)}/compare/${latestTag}...${tagName}`;
 };
 
 class KeepAChangelog extends Plugin {
@@ -45,9 +20,10 @@ class KeepAChangelog extends Plugin {
       addUnreleased,
       keepUnreleased,
       addVersionUrl,
-      unreleasedVersionUrlBuilder,
-      releaseVersionUrlBuilder,
-      firstVersionUrlBuilder,
+      repositoryUrlFormat,
+      unreleasedVersionUrlFormat,
+      releasedVersionUrlFormat,
+      firstVersionUrlFormat,
       head
     } = this.options;
 
@@ -56,9 +32,10 @@ class KeepAChangelog extends Plugin {
     this.addUnreleased = addUnreleased === undefined ? false : Boolean(addUnreleased);
     this.keepUnreleased = keepUnreleased === undefined ? false : Boolean(keepUnreleased);
     this.addVersionUrl = addVersionUrl === undefined ? false : Boolean(addVersionUrl);
-    this.unreleasedVersionUrlBuilder = unreleasedVersionUrlBuilder || getGitHubUnreleasedVersionUrl;
-    this.releaseVersionUrlBuilder = releaseVersionUrlBuilder || getGitHubReleasedVersionUrl;
-    this.firstVersionUrlBuilder = firstVersionUrlBuilder || getGitHubFirstVersionUrl;
+    this.repositoryUrlFormat = repositoryUrlFormat || 'https://{host}/{repository}';
+    this.unreleasedVersionUrlFormat = unreleasedVersionUrlFormat || '{repositoryUrl}/compare/{tagName}...{head}';
+    this.releasedVersionUrlFormat = releasedVersionUrlFormat || '{repositoryUrl}/compare/{previousTag}...{tagName}';
+    this.firstVersionUrlFormat = firstVersionUrlFormat || '{repositoryUrl}/releases/tag/{tagName}';
     this.head = head || 'HEAD';
 
     this.changelogPath = path.resolve(this.filename);
@@ -109,10 +86,11 @@ class KeepAChangelog extends Plugin {
     const { version, latestVersion, tagName, latestTag, repo } = this.config.getContext();
     let updatedChangelog = changelog;
 
+    const repositoryUrl = format(this.repositoryUrlFormat, repo);
     const unreleasedLinkRegex = new RegExp(`\\[unreleased\\]\\:.*${this.head}`, 'i');
 
     // Add or update the Unreleased link
-    const unreleasedUrl = this.unreleasedVersionUrlBuilder({ repo, tagName, head: this.head });
+    const unreleasedUrl = format(this.unreleasedVersionUrlFormat, { repositoryUrl, tagName, head: this.head });
     const unreleasedLink = `[unreleased]: ${unreleasedUrl}`;
     if (unreleasedLinkRegex.test(updatedChangelog)) {
       updatedChangelog = updatedChangelog.replace(unreleasedLinkRegex, unreleasedLink);
@@ -122,14 +100,14 @@ class KeepAChangelog extends Plugin {
 
     // Add a link for the first tagged version
     if (!latestTag) {
-      const firstVersionUrl = this.firstVersionUrlBuilder({ repo, tagName });
+      const firstVersionUrl = format(this.firstVersionUrlFormat, { repositoryUrl, tagName });
       const firstVersionLink = `[${version}]: ${firstVersionUrl}`;
       return `${updatedChangelog}${this.EOL}${firstVersionLink}`;
     }
 
     // Add a link for the new version
     const latestVersionLink = `[${latestVersion}]:`;
-    const releaseUrl = this.releaseVersionUrlBuilder({ repo, latestTag, tagName });
+    const releaseUrl = format(this.releasedVersionUrlFormat, { repositoryUrl, previousTag: latestTag, tagName });
     const releaseLink = `[${version}]: ${releaseUrl}`;
     if (updatedChangelog.includes(latestVersionLink)) {
       return updatedChangelog.replace(latestVersionLink, `${releaseLink}${this.EOL}${latestVersionLink}`);
