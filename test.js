@@ -186,7 +186,7 @@ test('should add unreleased section and links to the end of the file', async t =
   );
 });
 
-test.only('should add links to the end of a new changelog', async t => {
+test('should add links to the end of a new changelog', async t => {
   const options = {
     [namespace]: { filename: 'CHANGELOG-VERSION_URL_NEW.md', addVersionUrl: true, strictLatest: false }
   };
