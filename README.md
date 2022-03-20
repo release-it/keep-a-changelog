@@ -33,6 +33,24 @@ In [release-it](https://github.com/release-it/release-it) config:
 
 ### versionUrlFormats
 
+The URL formats used when `addVersionUrl` is set to `true`. Example configuration for a repository in Azure DevOps:
+
+```json
+"plugins": {
+  "@release-it/keep-a-changelog": {
+    "filename": "CHANGELOG.md",
+    "head": "main",
+    "addVersionUrl": true,
+    "versionUrlFormats": {
+      "repositoryUrl": "https://dev.azure.com/...",
+      "unreleasedUrl": "{repositoryUrl}/branchCompare?baseVersion=GT{tagName}&targetVersion=GB{head}",
+      "versionUrl": "{repositoryUrl}/branchCompare?baseVersion=GT{previousTag}&targetVersion=GT{tagName}",
+      "firstVersionUrl": "{repositoryUrl}?version=GT{tagName}"
+    }
+  }
+}
+```
+
 | option          | default value                                         | description                                                                                 |
 | --------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------- |
 | repositoryUrl   | `'https://{host}/{repository}'`                       | The format of the repository URL.                                                           |
