@@ -2,6 +2,7 @@ const { Plugin } = require('release-it');
 const fs = require('fs');
 const path = require('path');
 const detectNewline = require('detect-newline');
+var format = require('string-template');
 
 const pad = num => ('0' + num).slice(-2);
 
@@ -10,16 +11,33 @@ const getFormattedDate = () => {
   return `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`;
 };
 
+/**
+ * Default formats used for creating version URLs. Uses GitHub URL formats, e.g.
+ *
+ * https://github.com/release-it/release-it/compare/1.0.0...HEAD
+ * https://github.com/release-it/release-it/compare/0.0.0...1.0.0
+ * https://github.com/release-it/release-it/releases/tag/1.0.0
+ */
+const defaultVersionUrlFormats = {
+  repositoryUrl: 'https://{host}/{repository}',
+  unreleasedUrl: '{repositoryUrl}/compare/{tagName}...{head}',
+  versionUrl: '{repositoryUrl}/compare/{previousTag}...{tagName}',
+  firstVersionUrl: '{repositoryUrl}/releases/tag/{tagName}'
+};
+
 class KeepAChangelog extends Plugin {
   async init() {
     await super.init();
-    const { filename, strictLatest, addUnreleased, keepUnreleased, addVersionUrl, head } = this.options;
+    const { filename, strictLatest, addUnreleased, keepUnreleased, addVersionUrl, versionUrlFormats, head } = this.options;
 
     this.filename = filename || 'CHANGELOG.md';
     this.strictLatest = strictLatest === undefined ? true : Boolean(strictLatest);
     this.addUnreleased = addUnreleased === undefined ? false : Boolean(addUnreleased);
     this.keepUnreleased = keepUnreleased === undefined ? false : Boolean(keepUnreleased);
     this.addVersionUrl = addVersionUrl === undefined ? false : Boolean(addVersionUrl);
+    this.versionUrlFormats = versionUrlFormats
+      ? { ...defaultVersionUrlFormats, ...versionUrlFormats }
+      : defaultVersionUrlFormats;
     this.head = head || 'HEAD';
 
     this.changelogPath = path.resolve(this.filename);
@@ -47,9 +65,9 @@ class KeepAChangelog extends Plugin {
     const { filename, strictLatest } = this;
 
     const previousReleaseTitle = strictLatest ? `## [${latestVersion}]` : `## [`;
-    const hasPreviouReleaseSection = this.changelogContent.includes(previousReleaseTitle);
+    const hasPreviousReleaseSection = this.changelogContent.includes(previousReleaseTitle);
 
-    if (strictLatest && !hasPreviouReleaseSection) {
+    if (strictLatest && !hasPreviousReleaseSection) {
       throw Error(`Missing section for previous release ("${latestVersion}") in ${filename}.`);
     }
 
@@ -76,26 +94,33 @@ class KeepAChangelog extends Plugin {
     const { version, latestVersion, tagName, latestTag, repo } = this.config.getContext();
     let updatedChangelog = changelog;
 
-    const repositoryUrl = `https://${repo.host}/${repo.repository}`;
+    const repositoryUrl = format(this.versionUrlFormats.repositoryUrl, repo);
+    const unreleasedLinkRegex = new RegExp(`\\[unreleased\\]\\:.*${this.head}`, 'i');
 
     // Add or update the Unreleased link
-    const unreleasedUrl = `${repositoryUrl}/compare/${tagName}...${this.head}`;
-    const unreleasedLink = `[Unreleased]: ${unreleasedUrl}`;
-    const hasUnreleasedLink = /^\[(Unreleased)\]\: .*$/im;
-    if (hasUnreleasedLink.test(updatedChangelog)) {
-      updatedChangelog = updatedChangelog.replace(hasUnreleasedLink, '[$1]: ' + unreleasedUrl);
+    const unreleasedUrl = format(this.versionUrlFormats.unreleasedUrl, { repositoryUrl, tagName, head: this.head });
+    const unreleasedLink = `[unreleased]: ${unreleasedUrl}`;
+    if (unreleasedLinkRegex.test(updatedChangelog)) {
+      updatedChangelog = updatedChangelog.replace(unreleasedLinkRegex, unreleasedLink);
     } else {
-      updatedChangelog = `${updatedChangelog}${this.EOL}${this.EOL}${unreleasedLink}`;
+      updatedChangelog = `${updatedChangelog}${this.EOL}${unreleasedLink}`;
+    }
+
+    // Add a link for the first tagged version
+    if (!latestTag) {
+      const firstVersionUrl = format(this.versionUrlFormats.firstVersionUrl, { repositoryUrl, tagName });
+      const firstVersionLink = `[${version}]: ${firstVersionUrl}`;
+      return `${updatedChangelog}${this.EOL}${firstVersionLink}`;
     }
 
     // Add a link for the new version
     const latestVersionLink = `[${latestVersion}]:`;
-    const releaseUrl = `${repositoryUrl}/compare/${latestTag}...${tagName}`;
-    const releaseLink = `[${version}]: ${releaseUrl}`;
+    const versionUrl = format(this.versionUrlFormats.versionUrl, { repositoryUrl, previousTag: latestTag, tagName });
+    const versionLink = `[${version}]: ${versionUrl}`;
     if (updatedChangelog.includes(latestVersionLink)) {
-      return updatedChangelog.replace(latestVersionLink, `${releaseLink}${this.EOL}${latestVersionLink}`);
+      return updatedChangelog.replace(latestVersionLink, `${versionLink}${this.EOL}${latestVersionLink}`);
     } else {
-      return `${updatedChangelog}${this.EOL}${releaseLink}`;
+      return `${updatedChangelog}${this.EOL}${versionLink}`;
     }
   }
 

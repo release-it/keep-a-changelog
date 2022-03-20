@@ -29,16 +29,17 @@
     "url": "https://webpro.nl"
   },
   "dependencies": {
-    "detect-newline": "^3.1.0"
+    "detect-newline": "^3.1.0",
+    "string-template": "^1.0.0"
   },
   "devDependencies": {
     "bron": "^1.1.1",
     "mock-fs": "^5.0.0",
-    "release-it": "^14.8.0",
+    "release-it": "^14.13.1",
     "sinon": "^11.1.1"
   },
   "peerDependencies": {
-    "release-it": "^14.8.0"
+    "release-it": "^14.13.1"
   },
   "engines": {
     "node": ">=10"
