@@ -20,7 +20,7 @@ class KeepAChangelog extends Plugin {
     this.addUnreleased = addUnreleased === undefined ? false : Boolean(addUnreleased);
     this.keepUnreleased = keepUnreleased === undefined ? false : Boolean(keepUnreleased);
     this.addVersionUrl = addVersionUrl === undefined ? false : Boolean(addVersionUrl);
-    this.head = head || 'HEAD'
+    this.head = head || 'HEAD';
 
     this.changelogPath = path.resolve(this.filename);
     this.changelogContent = fs.readFileSync(this.changelogPath, 'utf-8');
@@ -71,14 +71,22 @@ class KeepAChangelog extends Plugin {
     let updatedChangelog = changelog;
 
     const repositoryUrl = `https://${repo.host}/${repo.repository}`;
+    const unreleasedLinkRegex = new RegExp(`\\[unreleased\\]\\:.*${this.head}`, 'i');
 
     // Add or update the Unreleased link
     const unreleasedUrl = `${repositoryUrl}/compare/${tagName}...${this.head}`;
-    const unreleasedLink = `[Unreleased]: ${unreleasedUrl}`;
-    if (updatedChangelog.includes('[Unreleased]:')) {
-      updatedChangelog = updatedChangelog.replace(new RegExp('\\[Unreleased\\]\\:.*' + this.head), unreleasedLink);
+    const unreleasedLink = `[unreleased]: ${unreleasedUrl}`;
+    if (unreleasedLinkRegex.test(updatedChangelog)) {
+      updatedChangelog = updatedChangelog.replace(unreleasedLinkRegex, unreleasedLink);
     } else {
-      updatedChangelog = `${updatedChangelog}${this.EOL}${this.EOL}${unreleasedLink}`;
+      updatedChangelog = `${updatedChangelog}${this.EOL}${unreleasedLink}`;
+    }
+
+    // Add a link for the first tagged version
+    if (!latestTag) {
+      const firstVersionUrl = `${repositoryUrl}/releases/tag/${tagName}`;
+      const firstVersionLink = `[${version}]: ${firstVersionUrl}`;
+      return `${updatedChangelog}${this.EOL}${firstVersionLink}`;
     }
 
     // Add a link for the new version
