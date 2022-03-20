@@ -54,6 +54,13 @@ test('should throw for empty "unreleased" section', async t => {
   await assert.rejects(runTasks(plugin), /There are no entries under "Unreleased" section in CHANGELOG-EMPTY\.md/);
 });
 
+test('should not throw for empty "unreleased" section when no-increment flag is set', async t => {
+  const options = { increment: false, [namespace]: { filename: 'CHANGELOG-EMPTY.md' } };
+  const plugin = factory(Plugin, { namespace, options });
+  await runTasks(plugin);
+  assert.equal(plugin.getChangelog(), readFile('./CHANGELOG-EMPTY.md'));
+});
+
 test('should throw for missing section for previous release', async t => {
   const options = { [namespace]: { filename: 'CHANGELOG-MISSING.md' } };
   const plugin = factory(Plugin, { namespace, options });

@@ -53,6 +53,12 @@ class KeepAChangelog extends Plugin {
   }
 
   getChangelog(latestVersion) {
+    const { isIncrement } = this.config;
+    // Return the unchanged changelog content when no increment is made
+    if (!isIncrement) {
+      return this.changelogContent;
+    }
+
     const { changelog } = this.getContext();
     if (changelog) return changelog;
 
@@ -120,8 +126,8 @@ class KeepAChangelog extends Plugin {
 
   beforeRelease() {
     const { addUnreleased, keepUnreleased, addVersionUrl } = this;
-    const { isDryRun } = this.config;
-    if (isDryRun || keepUnreleased) return;
+    const { isDryRun, isIncrement } = this.config;
+    if (isDryRun || keepUnreleased || !isIncrement) return;
     const { version } = this.getContext();
     const formattedDate = getFormattedDate();
     const unreleasedTitle = addUnreleased ? this.unreleasedTitle + this.EOL + this.EOL : '';
