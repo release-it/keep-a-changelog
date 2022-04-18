@@ -107,7 +107,7 @@ class KeepAChangelog extends Plugin {
     }
 
     // Add a link for the first tagged version
-    if (!latestTag) {
+    if (!latestTag || latestTag === '0.0.0') {
       const firstVersionUrl = format(this.versionUrlFormats.firstVersionUrl, { repositoryUrl, tagName });
       const firstVersionLink = `[${version}]: ${firstVersionUrl}`;
       return `${updatedChangelog}${this.EOL}${firstVersionLink}`;

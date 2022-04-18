@@ -263,6 +263,6 @@ test('should add links to the end of a new changelog', async t => {
   assert.equal(plugin.getChangelog(), '* Item A\n* Item B');
   assert.match(
     readFile('./CHANGELOG-VERSION_URL_NEW.md'),
-    /^## \[1\.0\.0] - [0-9]{4}-[0-9]{2}-[0-9]{2}\n\n\* Item A\n\* Item B\n\n\[unreleased]: https:\/\/github\.com\/user\/project\/compare\/1\.0\.0\.\.\.HEAD\n\[1.0.0]: https:\/\/github\.com\/user\/project\/releases\/tag\/1\.0\.0\n$/
+    /^## \[1\.0\.0] - [0-9]{4}-[0-9]{2}-[0-9]{2}\n\n\* Item A\n\* Item B\n\n\[unreleased]: https:\/\/github\.com\/user\/project\/compare\/1\.0\.0\.\.\.HEAD\n\[1\.0\.0]: https:\/\/github\.com\/user\/project\/releases\/tag\/1\.0\.0\n$/
   );
 });
