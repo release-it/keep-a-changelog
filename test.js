@@ -1,10 +1,10 @@
-const fs = require('fs');
-const test = require('bron');
-const assert = require('assert').strict;
-const mock = require('mock-fs');
-const sinon = require('sinon');
-const { factory, runTasks } = require('release-it/test/util');
-const Plugin = require('.');
+import fs from 'fs';
+import test from 'bron';
+import { strict as assert } from 'assert';
+import mock from 'mock-fs';
+import sinon from 'sinon';
+import { factory, runTasks } from 'release-it/test/util';
+import Plugin from './index.js';
 
 const initialDryRunFileContents =
   '\n\n## [Unreleased]\n\n* Item A\n* Item B\n\n## [1.0.0] - 2020-05-02\n\n* Item C\n* Item D';

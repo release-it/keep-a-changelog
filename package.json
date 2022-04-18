@@ -2,7 +2,8 @@
   "name": "@release-it/keep-a-changelog",
   "version": "2.5.0",
   "description": "Keep-a-changelog plugin for release-it",
-  "main": "index.js",
+  "type": "module",
+  "exports": "./index.js",
   "scripts": {
     "test": "bron test.js",
     "release": "release-it"
@@ -29,20 +30,20 @@
     "url": "https://webpro.nl"
   },
   "dependencies": {
-    "detect-newline": "^3.1.0",
+    "detect-newline": "^4.0.0",
     "string-template": "^1.0.0"
   },
   "devDependencies": {
-    "bron": "^1.1.1",
+    "bron": "^2.0.3",
     "mock-fs": "^5.0.0",
-    "release-it": "^14.13.1",
-    "sinon": "^11.1.1"
+    "release-it": "^15.0.0-esm.4",
+    "sinon": "^13.0.2"
   },
   "peerDependencies": {
-    "release-it": "^14.13.1"
+    "release-it": "^15.0.0-esm.4"
   },
   "engines": {
-    "node": ">=10"
+    "node": ">=14"
   },
   "release-it": {
     "github": {

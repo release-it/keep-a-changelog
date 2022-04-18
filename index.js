@@ -1,8 +1,8 @@
-const { Plugin } = require('release-it');
-const fs = require('fs');
-const path = require('path');
-const detectNewline = require('detect-newline');
-var format = require('string-template');
+import { Plugin } from 'release-it';
+import fs from 'fs';
+import path from 'path';
+import { detectNewline } from 'detect-newline';
+import format from 'string-template';
 
 const pad = num => ('0' + num).slice(-2);
 
@@ -142,4 +142,4 @@ class KeepAChangelog extends Plugin {
   }
 }
 
-module.exports = KeepAChangelog;
+export default KeepAChangelog;
