@@ -1,9 +1,9 @@
-import fs from 'fs';
-import test from 'bron';
 import { strict as assert } from 'assert';
+import test from 'bron';
+import fs from 'fs';
 import mock from 'mock-fs';
+import { factory, runTasks } from 'release-it/test/util/index.js';
 import sinon from 'sinon';
-import { factory, runTasks } from 'release-it/test/util';
 import Plugin from './index.js';
 
 const initialDryRunFileContents =
@@ -56,11 +56,30 @@ test('should throw for empty "unreleased" section', async t => {
   await assert.rejects(runTasks(plugin), /There are no entries under "Unreleased" section in CHANGELOG-EMPTY\.md/);
 });
 
-test('should not throw for empty "unreleased" section when no-increment flag is set', async t => {
+test('should throw for missing "unreleased" section when no-increment flag is set if changelog is misformatted', async t => {
+  const options = { increment: false, [namespace]: { filename: 'CHANGELOG-FOO.md' } };
+  const plugin = factory(Plugin, { namespace, options });
+  await assert.rejects(runTasks(plugin), /Missing "Unreleased" section in CHANGELOG-FOO.md/);
+});
+
+test('should throw for missing "1.0.0" section when no-increment flag is set', async t => {
+  const options = { increment: false, [namespace]: { filename: 'CHANGELOG-MISSING.md' } };
+  const plugin = factory(Plugin, { namespace, options });
+  await assert.rejects(runTasks(plugin), /Missing section for previous release \("1\.0\.0"\) in CHANGELOG-MISSING\.md/);
+});
+
+test('should find "1.0.0" section when no-increment flag is set when items under version', async t => {
   const options = { increment: false, [namespace]: { filename: 'CHANGELOG-EMPTY.md' } };
   const plugin = factory(Plugin, { namespace, options });
   await runTasks(plugin);
-  assert.equal(plugin.getChangelog(), readFile('./CHANGELOG-EMPTY.md'));
+  assert.equal(plugin.getChangelog('1.0.0'), '* Item A\n* Item B');
+});
+
+test('should find "1.0.0" section when no-increment flag is set when items under unreleased and version', async t => {
+  const options = { increment: false, [namespace]: { filename: 'CHANGELOG-FULL.md' } };
+  const plugin = factory(Plugin, { namespace, options });
+  await runTasks(plugin);
+  assert.equal(plugin.getChangelog('1.0.0'), '* Item C\n* Item D');
 });
 
 test('should throw for missing section for previous release', async t => {

@@ -53,37 +53,48 @@ class KeepAChangelog extends Plugin {
   }
 
   getChangelog(latestVersion) {
-    const { isIncrement } = this.config;
-    // Return the unchanged changelog content when no increment is made
-    if (!isIncrement) {
-      return this.changelogContent;
-    }
-
     const { changelog } = this.getContext();
     if (changelog) return changelog;
 
     const { filename, strictLatest } = this;
-
     const previousReleaseTitle = strictLatest ? `## [${latestVersion}]` : `## [`;
     const hasPreviousReleaseSection = this.changelogContent.includes(previousReleaseTitle);
-
     if (strictLatest && !hasPreviousReleaseSection) {
       throw Error(`Missing section for previous release ("${latestVersion}") in ${filename}.`);
     }
 
-    const startIndex = this.changelogContent.indexOf(this.unreleasedTitle) + this.unreleasedTitle.length;
-    let endIndex = this.changelogContent.indexOf(previousReleaseTitle, startIndex);
-    if (!strictLatest && endIndex === -1) {
-      endIndex = this.changelogContent.length;
-    }
-
-    const changelogContent = this.changelogContent.substring(startIndex, endIndex).trim();
-    if (!changelogContent) {
-      throw Error(`There are no entries under "${this.unreleasedTitleRaw}" section in ${filename}.`);
-    }
+    const { isIncrement } = this.config;
+    const titleToFind = isIncrement ? this.unreleasedTitleRaw : latestVersion;
+    const changelogContent = this.getChangelogEntryContent(titleToFind);
 
     this.setContext({ changelog: changelogContent });
     return changelogContent;
+  }
+
+  getChangelogEntryContent(releaseTitleRaw) {
+    const { filename, changelogContent, EOL } = this;
+
+    const releaseTitleMarkdown = `## [${releaseTitleRaw}]`;
+    const previousReleaseTitle = `## [`;
+
+    const indexOfReleaseTitle = changelogContent.indexOf(releaseTitleMarkdown);
+
+    if (indexOfReleaseTitle === -1) {
+      throw Error(`Missing section for previous release ("${releaseTitleRaw}") in ${filename}.`);
+    }
+
+    const entryContentStartIndex = changelogContent.indexOf(EOL, indexOfReleaseTitle);
+    let entryContentEndIndex = changelogContent.indexOf(previousReleaseTitle, entryContentStartIndex);
+    if (entryContentEndIndex === -1) {
+      entryContentEndIndex = changelogContent.length;
+    }
+
+    const changelogEntryContent = changelogContent.substring(entryContentStartIndex, entryContentEndIndex).trim();
+    if (!changelogEntryContent) {
+      throw Error(`There are no entries under "${releaseTitleRaw}" section in ${filename}.`);
+    }
+
+    return changelogEntryContent;
   }
 
   bump(version) {
