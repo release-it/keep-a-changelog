@@ -35,9 +35,9 @@
   },
   "devDependencies": {
     "bron": "^2.0.3",
-    "mock-fs": "^5.0.0",
-    "release-it": "^15.0.0-esm.4",
-    "sinon": "^13.0.2"
+    "mock-fs": "^5.1.4",
+    "release-it": "^15.3.0",
+    "sinon": "^14.0.0"
   },
   "peerDependencies": {
     "release-it": "^15.0.0-esm.4"
