@@ -1,8 +1,9 @@
 {
   "name": "@kasadev/keep-a-changelog",
-  "version": "2.2.0",
+  "version": "3.1.0",
   "description": "Keep-a-changelog plugin for release-it",
-  "main": "index.js",
+  "type": "module",
+  "exports": "./index.js",
   "scripts": {
     "test": "bron test.js",
     "release": "release-it"
@@ -29,19 +30,20 @@
     "url": "https://webpro.nl"
   },
   "dependencies": {
-    "detect-newline": "^3.1.0"
+    "detect-newline": "^4.0.0",
+    "string-template": "^1.0.0"
   },
   "devDependencies": {
-    "bron": "^1.1.1",
-    "mock-fs": "^4.13.0",
-    "release-it": "^14.2.0",
-    "sinon": "^9.2.1"
+    "bron": "^2.0.3",
+    "mock-fs": "^5.1.4",
+    "release-it": "^15.3.0",
+    "sinon": "^14.0.0"
   },
   "peerDependencies": {
-    "release-it": "^14.2.0"
+    "release-it": "^15.0.0-esm.4"
   },
   "engines": {
-    "node": ">=10"
+    "node": ">=14"
   },
   "release-it": {
     "github": {
