@@ -36,18 +36,19 @@
   "devDependencies": {
     "bron": "^2.0.3",
     "mock-fs": "^5.1.4",
-    "release-it": "^15.3.0",
-    "sinon": "^14.0.0"
+    "release-it": "^16.0.0",
+    "sinon": "^15.2.0"
   },
   "peerDependencies": {
-    "release-it": "^15.0.0-esm.4"
+    "release-it": "^16.0.0"
   },
   "engines": {
-    "node": ">=14"
+    "node": ">=16"
   },
   "release-it": {
     "github": {
-      "release": true
+      "release": true,
+      "tokenRef": "GITHUB_TOKEN_RELEASE_IT"
     },
     "hooks": {
       "before:init": "npm test"
