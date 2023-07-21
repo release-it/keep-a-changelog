@@ -3,6 +3,13 @@
 This [release-it plugin](https://github.com/release-it/release-it/blob/master/docs/plugins.md) maintains your
 CHANGELOG.md file according to the [Keep A Changelog](https://keepachangelog.com/) standards.
 
+It updates the changelog automatically by:
+
+- replacing the `## [Unreleased]` header with the current version and release date.
+- [optionally] adding a new `## [Unreleased]` header as preparation for future changes.
+
+It does not automatically populate the changelog with commit messages from the git history!
+
 The idea and initial implementation comes [from @eMarek](https://github.com/release-it/release-it/issues/662).
 
 ```
