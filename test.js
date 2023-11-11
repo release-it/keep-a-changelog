@@ -1,7 +1,9 @@
 import { strict as assert } from 'assert';
 import test from 'bron';
 import fs from 'fs';
-import mock from 'mock-fs';
+import { resolve } from 'path';
+import { vol } from 'memfs';
+import { patchFs } from 'fs-monkey';
 import { factory, runTasks } from 'release-it/test/util/index.js';
 import sinon from 'sinon';
 import Plugin from './index.js';
@@ -9,7 +11,7 @@ import Plugin from './index.js';
 const initialDryRunFileContents =
   '\n\n## [Unreleased]\n\n* Item A\n* Item B\n\n## [1.0.0] - 2020-05-02\n\n* Item C\n* Item D';
 
-mock({
+vol.fromJSON({
   './CHANGELOG-FOO.md': '## [FOO]\n\n* Item A\n* Item B',
   './CHANGELOG-MISSING.md': '## [Unreleased]\n\n* Item A\n* Item B',
   './CHANGELOG-EMPTY.md': '## [Unreleased]\n\n\n\n## [1.0.0]\n\n* Item A\n* Item B',
@@ -33,6 +35,8 @@ mock({
     '## [Unreleased]\n\n* Item A\n* Item B\n\n## [1.0.0] - 2020-05-02\n\n* Item C\n* Item D\n\n[Unreleased]: https://github.com/user/project/compare/1.0.0..HEAD\n[1.0.0]: https://github.com/user/project/compare/0.0.0...1.0.0',
   './CHANGELOG-VERSION_URL_NEW.md': '## [Unreleased]\n\n* Item A\n* Item B\n'
 });
+
+patchFs(vol);
 
 const readFile = file => fs.readFileSync(file).toString();
 
