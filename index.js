@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { detectNewline } from 'detect-newline';
 import format from 'string-template';
+import semver from "semver";
 
 const pad = num => ('0' + num).slice(-2);
 
@@ -56,11 +57,13 @@ class KeepAChangelog extends Plugin {
     const { changelog } = this.getContext();
     if (changelog) return changelog;
 
-    const { filename, strictLatest } = this;
-    const previousReleaseTitle = strictLatest ? `## [${latestVersion}]` : `## [`;
-    const hasPreviousReleaseSection = this.changelogContent.includes(previousReleaseTitle);
-    if (strictLatest && !hasPreviousReleaseSection) {
-      throw Error(`Missing section for previous release ("${latestVersion}") in ${filename}.`);
+    const badVersions = Array.from(this.changelogContent.matchAll(/(?<=## \[)((\d+\.){2}\d+[^\]]*)/g)
+    .map(ver => ver?.[0])
+    .filter(ver => {
+      return semver.compare(ver, latestVersion) > 0;
+    }))
+    if(badVersions.length > 0) {
+      throw new Error(`Invalid versions in ${this.filename}: ${badVersions.join(', ')}`)
     }
 
     const { isIncrement } = this.config;
