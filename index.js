@@ -63,7 +63,7 @@ class KeepAChangelog extends Plugin {
       return semver.compare(ver, latestVersion) > 0;
     }))
     if(badVersions.length > 0) {
-      throw new Error(`Invalid versions in ${this.filename}: ${badVersions.join(', ')}`)
+      throw new Error(`Invalid versions in ${this.filename}: ${badVersions.join(', ')}.`)
     }
 
     const { isIncrement } = this.config;
