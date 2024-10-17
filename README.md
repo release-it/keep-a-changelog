@@ -31,7 +31,6 @@ In [release-it](https://github.com/release-it/release-it) config:
 | option            | default value    | description                                                                                                                                      |
 | ----------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
 | filename          | `'CHANGELOG.md'` | File with changelogs.                                                                                                                            |
-| strictLatest      | `true`           | Entry of latest version must be present in order to get correct changelog. Set this option to `false` if you expect latest version without logs. |
 | addUnreleased     | `false`          | It leaves "Unreleased" title row if set to `true`.                                                                                               |
 | keepUnreleased    | `false`          | It leaves "Unreleased" title row unchanged if set to `true`.                                                                                     |
 | addVersionUrl     | `false`          | Links the version to the according changeset. Uses GitHub-compatible URLs by default, see other options to configure the URL format.             |

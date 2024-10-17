@@ -29,10 +29,9 @@ const defaultVersionUrlFormats = {
 class KeepAChangelog extends Plugin {
   async init() {
     await super.init();
-    const { filename, strictLatest, addUnreleased, keepUnreleased, addVersionUrl, versionUrlFormats, head } = this.options;
+    const { filename, addUnreleased, keepUnreleased, addVersionUrl, versionUrlFormats, head } = this.options;
 
     this.filename = filename || 'CHANGELOG.md';
-    this.strictLatest = strictLatest === undefined ? true : Boolean(strictLatest);
     this.addUnreleased = addUnreleased === undefined ? false : Boolean(addUnreleased);
     this.keepUnreleased = keepUnreleased === undefined ? false : Boolean(keepUnreleased);
     this.addVersionUrl = addVersionUrl === undefined ? false : Boolean(addVersionUrl);
