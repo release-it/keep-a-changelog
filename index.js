@@ -57,11 +57,11 @@ class KeepAChangelog extends Plugin {
     const { changelog } = this.getContext();
     if (changelog) return changelog;
 
-    const badVersions = Array.from(this.changelogContent.matchAll(/(?<=## \[)((\d+\.){2}\d+[^\]]*)/g)
-    .map(ver => ver?.[0])
-    .filter(ver => {
+    // from sections
+    const versions = Array.from(this.changelogContent.matchAll(/(?<=## \[)((\d+\.){2}\d+[^\]]*)/g)).map(ver => ver?.[0])
+    const badVersions = versions.filter(ver => {
       return semver.compare(ver, latestVersion) > 0;
-    }))
+    })
     if(badVersions.length > 0) {
       throw new Error(`Invalid versions in ${this.filename}: ${badVersions.join(', ')}.`)
     }
