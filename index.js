@@ -57,16 +57,38 @@ class KeepAChangelog extends Plugin {
     if (changelog) return changelog;
 
     // from sections
-    const versions = Array.from(this.changelogContent.matchAll(/(?<=## \[)((\d+\.){2}\d+[^\]]*)/g)).map(ver => ver?.[0])
-    const badVersions = versions.filter(ver => {
-      return semver.compare(ver, latestVersion) > 0;
+    const unreleasedTitleRawList = Array.from(this.changelogContent.matchAll(/(?<=## \[)Unreleased(?=])/g)).map(ver => ver?.[0])
+    if(unreleasedTitleRawList.length > 1) {
+      throw new Error(`Too many "Unreleased" sections in ${this.filename}: ${unreleasedTitleRawList.length}.`)
+    }
+    const versionTitleRawList = Array.from(this.changelogContent.matchAll(/(?<=## \[)((\d+\.){2}\d+[^\]]*)/g)).map(ver => ver?.[0])
+    const badVersions = versionTitleRawList.filter(ver => {
+      return semver.compare(ver, latestVersion) > 0; // return ver > latestVersion
     })
     if(badVersions.length > 0) {
-      throw new Error(`Invalid versions in ${this.filename}: ${badVersions.join(', ')}.`)
+      throw new Error(`Invalid versions in ${this.filename}: ${badVersions.join(', ')}. Current: ${latestVersion}.`)
+    }
+    const badOrder = versionTitleRawList.filter((ver, veri) => {
+      const previous = versionTitleRawList[veri - 1];
+      const next = versionTitleRawList[veri + 1];
+
+      if(previous) {
+        return semver.compare(ver, previous) > 0 // return ver > previous
+      }
+
+      if(next) {
+        return semver.compare(ver, next) < 0 // return ver < next
+      }
+
+      return false
+    })
+    if(badOrder.length > 0) {
+      throw new Error(`Invalid sections order in ${this.filename}: ${badOrder.join(', ')}.`)
     }
 
     const { isIncrement } = this.config;
-    const titleToFind = isIncrement ? this.unreleasedTitleRaw : latestVersion;
+    // use unreleased if initial release
+    const titleToFind = isIncrement || versionTitleRawList.length === 0 ? this.unreleasedTitleRaw : latestVersion;
     const changelogContent = this.getChangelogEntryContent(titleToFind);
 
     this.setContext({ changelog: changelogContent });
