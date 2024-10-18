@@ -56,34 +56,36 @@ class KeepAChangelog extends Plugin {
     const { changelog } = this.getContext();
     if (changelog) return changelog;
 
-    // from sections
     const unreleasedTitleRawList = Array.from(this.changelogContent.matchAll(/(?<=## \[)Unreleased(?=])/g)).map(ver => ver?.[0])
     if(unreleasedTitleRawList.length > 1) {
       throw new Error(`Too many "Unreleased" sections in ${this.filename}: ${unreleasedTitleRawList.length}.`)
     }
     const versionTitleRawList = Array.from(this.changelogContent.matchAll(/(?<=## \[)((\d+\.){2}\d+[^\]]*)/g)).map(ver => ver?.[0])
-    const badVersions = versionTitleRawList.filter(ver => {
-      return semver.compare(ver, latestVersion) > 0; // return ver > latestVersion
+    const badTitleRawList = versionTitleRawList.filter(ver => {
+      // invalid: ver > latestVersion
+      return !semver.valid(ver) || semver.gt(ver, latestVersion);
     })
-    if(badVersions.length > 0) {
-      throw new Error(`Invalid versions in ${this.filename}: ${badVersions.join(', ')}. Current: ${latestVersion}.`)
+    if(badTitleRawList.length > 0) {
+      throw new Error(`Invalid versions in ${this.filename}: ${badTitleRawList.join(', ')}. Current: ${latestVersion}.`)
     }
-    const badOrder = versionTitleRawList.filter((ver, veri) => {
+    const unorderedTitleRawList = versionTitleRawList.filter((ver, veri) => {
       const previous = versionTitleRawList[veri - 1];
       const next = versionTitleRawList[veri + 1];
 
       if(previous) {
-        return semver.compare(ver, previous) > 0 // return ver > previous
+        // bad order: ver > previous
+        return semver.gt(ver, previous)
       }
 
       if(next) {
-        return semver.compare(ver, next) < 0 // return ver < next
+        // bad order: ver < next
+        return semver.lt(ver, next)
       }
 
       return false
     })
-    if(badOrder.length > 0) {
-      throw new Error(`Invalid sections order in ${this.filename}: ${badOrder.join(', ')}.`)
+    if(unorderedTitleRawList.length > 0) {
+      throw new Error(`Invalid sections order in ${this.filename}: ${unorderedTitleRawList.join(', ')}.`)
     }
 
     const { isIncrement } = this.config;
