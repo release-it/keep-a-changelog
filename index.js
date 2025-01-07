@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { detectNewline } from 'detect-newline';
 import format from 'string-template';
+import semver from "semver";
 
 const pad = num => ('0' + num).slice(-2);
 
@@ -28,10 +29,9 @@ const defaultVersionUrlFormats = {
 class KeepAChangelog extends Plugin {
   async init() {
     await super.init();
-    const { filename, strictLatest, addUnreleased, keepUnreleased, addVersionUrl, versionUrlFormats, head } = this.options;
+    const { filename, addUnreleased, keepUnreleased, addVersionUrl, versionUrlFormats, head } = this.options;
 
     this.filename = filename || 'CHANGELOG.md';
-    this.strictLatest = strictLatest === undefined ? true : Boolean(strictLatest);
     this.addUnreleased = addUnreleased === undefined ? false : Boolean(addUnreleased);
     this.keepUnreleased = keepUnreleased === undefined ? false : Boolean(keepUnreleased);
     this.addVersionUrl = addVersionUrl === undefined ? false : Boolean(addVersionUrl);
@@ -56,15 +56,41 @@ class KeepAChangelog extends Plugin {
     const { changelog } = this.getContext();
     if (changelog) return changelog;
 
-    const { filename, strictLatest } = this;
-    const previousReleaseTitle = strictLatest ? `## [${latestVersion}]` : `## [`;
-    const hasPreviousReleaseSection = this.changelogContent.includes(previousReleaseTitle);
-    if (strictLatest && !hasPreviousReleaseSection) {
-      throw Error(`Missing section for previous release ("${latestVersion}") in ${filename}.`);
+    const unreleasedTitleRawList = Array.from(this.changelogContent.matchAll(/(?<=## \[)Unreleased(?=])/g)).map(ver => ver?.[0])
+    if(unreleasedTitleRawList.length > 1) {
+      throw new Error(`Too many "Unreleased" sections in ${this.filename}: ${unreleasedTitleRawList.length}.`)
+    }
+    const versionTitleRawList = Array.from(this.changelogContent.matchAll(/(?<=## \[)((\d+\.){2}\d+[^\]]*)/g)).map(ver => ver?.[0])
+    const badTitleRawList = versionTitleRawList.filter(ver => {
+      // invalid: ver > latestVersion
+      return !semver.valid(ver) || semver.gt(ver, latestVersion);
+    })
+    if(badTitleRawList.length > 0) {
+      throw new Error(`Invalid versions in ${this.filename}: ${badTitleRawList.join(', ')}. Current: ${latestVersion}.`)
+    }
+    const unorderedTitleRawList = versionTitleRawList.filter((ver, veri) => {
+      const previous = versionTitleRawList[veri - 1];
+      const next = versionTitleRawList[veri + 1];
+
+      if(previous) {
+        // bad order: ver > previous
+        return semver.gt(ver, previous)
+      }
+
+      if(next) {
+        // bad order: ver < next
+        return semver.lt(ver, next)
+      }
+
+      return false
+    })
+    if(unorderedTitleRawList.length > 0) {
+      throw new Error(`Invalid sections order in ${this.filename}: ${unorderedTitleRawList.join(', ')}.`)
     }
 
     const { isIncrement } = this.config;
-    const titleToFind = isIncrement ? this.unreleasedTitleRaw : latestVersion;
+    // use unreleased if initial release
+    const titleToFind = isIncrement || versionTitleRawList.length === 0 ? this.unreleasedTitleRaw : latestVersion;
     const changelogContent = this.getChangelogEntryContent(titleToFind);
 
     this.setContext({ changelog: changelogContent });

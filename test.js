@@ -12,11 +12,11 @@ const initialDryRunFileContents =
 
 vol.fromJSON({
   './CHANGELOG-FOO.md': '## [FOO]\n\n* Item A\n* Item B',
-  './CHANGELOG-MISSING.md': '## [Unreleased]\n\n* Item A\n* Item B',
+  './CHANGELOG-MULTIPLE_UNRELEASED.md': '## [Unreleased]\n* Item A\n\n## [Unreleased]* Item B\nB\n* Item C\n* Item D',
+  './CHANGELOG-INVALID_ORDER.md': '## [Unreleased]\n\n## [0.2.0]\n* Item A\n\n## [0.3.0]* Item B\nB\n\n## [0.1.0]\n* Item C\n* Item D',
   './CHANGELOG-EMPTY.md': '## [Unreleased]\n\n\n\n## [1.0.0]\n\n* Item A\n* Item B',
   './CHANGELOG-FULL.md':
     '# Changelog\n\n## [Unreleased]\n\n* Item A\n* Item B\n\n## [1.0.0] - 2020-05-02\n\n* Item C\n* Item D',
-  './CHANGELOG-NO-STRICT.md': '## [Unreleased]\n\n* Item A\n* Item B\n\n## [1.0.0] - 2020-05-02\n\n* Item C\n* Item D',
   './CHANGELOG-DRYRUN.md': initialDryRunFileContents,
   './CHANGELOG-LESS_NEW_LINES.md': '## [Unreleased]\n* Item A\n* Item B\n## [1.0.0] - 2020-05-02\n* Item C\n* Item D',
   './CHANGELOG-EOL.md':
@@ -65,10 +65,15 @@ test('should throw for missing "unreleased" section when no-increment flag is se
   await assert.rejects(runTasks(plugin), /Missing "Unreleased" section in CHANGELOG-FOO.md/);
 });
 
-test('should throw for missing "1.0.0" section when no-increment flag is set', async t => {
-  const options = { increment: false, [namespace]: { filename: 'CHANGELOG-MISSING.md' } };
+test('should throw for multiple "unreleased" sections', async t => {
+  const options = { [namespace]: { filename: 'CHANGELOG-MULTIPLE_UNRELEASED.md' } };
   const plugin = factory(Plugin, { namespace, options });
-  await assert.rejects(runTasks(plugin), /Missing section for previous release \("1\.0\.0"\) in CHANGELOG-MISSING\.md/);
+  await assert.rejects(runTasks(plugin), /Too many "Unreleased" sections in CHANGELOG-MULTIPLE_UNRELEASED.md: \d+./);
+});
+test('should throw for invalid order', async t => {
+  const options = { [namespace]: { filename: 'CHANGELOG-INVALID_ORDER.md' } };
+  const plugin = factory(Plugin, { namespace, options });
+  await assert.rejects(runTasks(plugin), /Invalid sections order in CHANGELOG-INVALID_ORDER.md: 0.2.0, 0.3.0./);
 });
 
 test('should find "1.0.0" section when no-increment flag is set when items under version', async t => {
@@ -83,12 +88,6 @@ test('should find "1.0.0" section when no-increment flag is set when items under
   const plugin = factory(Plugin, { namespace, options });
   await runTasks(plugin);
   assert.equal(plugin.getChangelog('1.0.0'), '* Item C\n* Item D');
-});
-
-test('should throw for missing section for previous release', async t => {
-  const options = { [namespace]: { filename: 'CHANGELOG-MISSING.md' } };
-  const plugin = factory(Plugin, { namespace, options });
-  await assert.rejects(runTasks(plugin), /Missing section for previous release \("1\.0\.0"\) in CHANGELOG-MISSING\.md/);
 });
 
 test('should find very first changelog with disabled strict latest option', async t => {
@@ -106,17 +105,6 @@ test('should write changelog', async t => {
   assert.match(
     readFile('./CHANGELOG-FULL.md'),
     /^# Changelog\n\n## \[1\.0\.1] - [0-9]{4}-[0-9]{2}-[0-9]{2}\n\n\* Item A\n\* Item B\n\n## \[1\.0\.0] - 2020-05-02\n\n\* Item C\n*\* Item D\n$/
-  );
-});
-
-test('should write changelog even with `strictLatest: false`', async t => {
-  const options = { [namespace]: { filename: 'CHANGELOG-NO-STRICT.md', strictLatest: false } };
-  const plugin = factory(Plugin, { namespace, options });
-  await runTasks(plugin);
-  assert.equal(plugin.getChangelog(), '* Item A\n* Item B');
-  assert.match(
-    readFile('./CHANGELOG-NO-STRICT.md'),
-    /## \[1\.0\.1] - [0-9]{4}-[0-9]{2}-[0-9]{2}\n\n\* Item A\n\* Item B\n\n## \[1\.0\.0] - 2020-05-02\n\n\* Item C\n*\* Item D/
   );
 });
 
