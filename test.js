@@ -1,7 +1,6 @@
-import { strict as assert } from 'assert';
+import { strict as assert } from 'node:assert';
 import test from 'bron';
-import fs from 'fs';
-import { resolve } from 'path';
+import fs from 'node:fs';
 import { vol } from 'memfs';
 import { patchFs } from 'fs-monkey';
 import { factory, runTasks } from 'release-it/test/util/index.js';
