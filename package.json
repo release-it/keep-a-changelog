@@ -35,13 +35,13 @@
   },
   "devDependencies": {
     "bron": "^2.0.3",
-    "fs-monkey": "^1.0.5",
-    "memfs": "^4.6.0",
-    "release-it": "^17.0.0",
-    "sinon": "^17.0.1"
+    "fs-monkey": "^1.0.6",
+    "memfs": "^4.15.3",
+    "release-it": "^18.0.0",
+    "sinon": "^19.0.2"
   },
   "peerDependencies": {
-    "release-it": "^17.0.0"
+    "release-it": "^18.0.0"
   },
   "engines": {
     "node": ">=18"
