@@ -1,6 +1,6 @@
 {
   "name": "@release-it/keep-a-changelog",
-  "version": "5.0.0",
+  "version": "6.0.0",
   "description": "Keep-a-changelog plugin for release-it",
   "type": "module",
   "exports": "./index.js",
