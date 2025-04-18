@@ -13,7 +13,8 @@ const initialDryRunFileContents =
 vol.fromJSON({
   './CHANGELOG-FOO.md': '## [FOO]\n\n* Item A\n* Item B',
   './CHANGELOG-MULTIPLE_UNRELEASED.md': '## [Unreleased]\n* Item A\n\n## [Unreleased]* Item B\nB\n* Item C\n* Item D',
-  './CHANGELOG-INVALID_ORDER.md': '## [Unreleased]\n\n## [0.2.0]\n* Item A\n\n## [0.3.0]* Item B\nB\n\n## [0.1.0]\n* Item C\n* Item D',
+  './CHANGELOG-INVALID_ORDER.md':
+    '## [Unreleased]\n\n## [0.2.0]\n* Item A\n\n## [0.3.0]* Item B\nB\n\n## [0.1.0]\n* Item C\n* Item D',
   './CHANGELOG-EMPTY.md': '## [Unreleased]\n\n\n\n## [1.0.0]\n\n* Item A\n* Item B',
   './CHANGELOG-FULL.md':
     '# Changelog\n\n## [Unreleased]\n\n* Item A\n* Item B\n\n## [1.0.0] - 2020-05-02\n\n* Item C\n* Item D',
@@ -43,63 +44,63 @@ const namespace = 'keep-a-changelog';
 
 test('should throw for missing changelog file', async t => {
   const options = { [namespace]: {} };
-  const plugin = factory(Plugin, { namespace, options });
+  const plugin = await factory(Plugin, { namespace, options });
   await assert.rejects(runTasks(plugin), /ENOENT: no such file or directory/);
 });
 
 test('should throw for missing "unreleased" section', async t => {
   const options = { [namespace]: { filename: 'CHANGELOG-FOO.md' } };
-  const plugin = factory(Plugin, { namespace, options });
+  const plugin = await factory(Plugin, { namespace, options });
   await assert.rejects(runTasks(plugin), /Missing "Unreleased" section in CHANGELOG-FOO.md/);
 });
 
 test('should throw for empty "unreleased" section', async t => {
   const options = { [namespace]: { filename: 'CHANGELOG-EMPTY.md' } };
-  const plugin = factory(Plugin, { namespace, options });
+  const plugin = await factory(Plugin, { namespace, options });
   await assert.rejects(runTasks(plugin), /There are no entries under "Unreleased" section in CHANGELOG-EMPTY\.md/);
 });
 
 test('should throw for missing "unreleased" section when no-increment flag is set if changelog is misformatted', async t => {
   const options = { increment: false, [namespace]: { filename: 'CHANGELOG-FOO.md' } };
-  const plugin = factory(Plugin, { namespace, options });
+  const plugin = await factory(Plugin, { namespace, options });
   await assert.rejects(runTasks(plugin), /Missing "Unreleased" section in CHANGELOG-FOO.md/);
 });
 
 test('should throw for multiple "unreleased" sections', async t => {
   const options = { [namespace]: { filename: 'CHANGELOG-MULTIPLE_UNRELEASED.md' } };
-  const plugin = factory(Plugin, { namespace, options });
+  const plugin = await factory(Plugin, { namespace, options });
   await assert.rejects(runTasks(plugin), /Too many "Unreleased" sections in CHANGELOG-MULTIPLE_UNRELEASED.md: \d+./);
 });
 test('should throw for invalid order', async t => {
   const options = { [namespace]: { filename: 'CHANGELOG-INVALID_ORDER.md' } };
-  const plugin = factory(Plugin, { namespace, options });
+  const plugin = await factory(Plugin, { namespace, options });
   await assert.rejects(runTasks(plugin), /Invalid sections order in CHANGELOG-INVALID_ORDER.md: 0.2.0, 0.3.0./);
 });
 
 test('should find "1.0.0" section when no-increment flag is set when items under version', async t => {
   const options = { increment: false, [namespace]: { filename: 'CHANGELOG-EMPTY.md' } };
-  const plugin = factory(Plugin, { namespace, options });
+  const plugin = await factory(Plugin, { namespace, options });
   await runTasks(plugin);
   assert.equal(plugin.getChangelog('1.0.0'), '* Item A\n* Item B');
 });
 
 test('should find "1.0.0" section when no-increment flag is set when items under unreleased and version', async t => {
   const options = { increment: false, [namespace]: { filename: 'CHANGELOG-FULL.md' } };
-  const plugin = factory(Plugin, { namespace, options });
+  const plugin = await factory(Plugin, { namespace, options });
   await runTasks(plugin);
   assert.equal(plugin.getChangelog('1.0.0'), '* Item C\n* Item D');
 });
 
 test('should find very first changelog with disabled strict latest option', async t => {
   const options = { [namespace]: { filename: 'CHANGELOG-UNRELEASED.md', strictLatest: false } };
-  const plugin = factory(Plugin, { namespace, options });
+  const plugin = await factory(Plugin, { namespace, options });
   await runTasks(plugin);
   assert.equal(plugin.getChangelog(), '* Item A\n* Item B');
 });
 
 test('should write changelog', async t => {
   const options = { [namespace]: { filename: 'CHANGELOG-FULL.md' } };
-  const plugin = factory(Plugin, { namespace, options });
+  const plugin = await factory(Plugin, { namespace, options });
   await runTasks(plugin);
   assert.equal(plugin.getChangelog(), '* Item A\n* Item B');
   assert.match(
@@ -110,28 +111,28 @@ test('should write changelog', async t => {
 
 test('should not write changelog in dry run', async t => {
   const options = { 'dry-run': true, [namespace]: { filename: 'CHANGELOG-DRYRUN.md' } };
-  const plugin = factory(Plugin, { namespace, options });
+  const plugin = await factory(Plugin, { namespace, options });
   await runTasks(plugin);
   assert.equal(readFile('./CHANGELOG-DRYRUN.md'), initialDryRunFileContents);
 });
 
 test('should not write changelog with keep unreleased option', async t => {
   const options = { [namespace]: { filename: 'CHANGELOG-DRYRUN.md', keepUnreleased: true } };
-  const plugin = factory(Plugin, { namespace, options });
+  const plugin = await factory(Plugin, { namespace, options });
   await runTasks(plugin);
   assert.equal(readFile('./CHANGELOG-DRYRUN.md'), initialDryRunFileContents);
 });
 
 test('should find changelog even if less new lines is used', async t => {
   const options = { [namespace]: { filename: 'CHANGELOG-LESS_NEW_LINES.md' } };
-  const plugin = factory(Plugin, { namespace, options });
+  const plugin = await factory(Plugin, { namespace, options });
   await runTasks(plugin);
   assert.equal(plugin.getChangelog(), '* Item A\n* Item B');
 });
 
 test('should write changelog with different EOL', async t => {
   const options = { [namespace]: { filename: 'CHANGELOG-EOL.md' } };
-  const plugin = factory(Plugin, { namespace, options });
+  const plugin = await factory(Plugin, { namespace, options });
   await runTasks(plugin);
   assert.equal(plugin.getChangelog(), '* Item A\r\n* Item B');
   assert.match(
@@ -142,7 +143,7 @@ test('should write changelog with different EOL', async t => {
 
 test('should write changelog and add unreleased section', async t => {
   const options = { [namespace]: { filename: 'CHANGELOG-UNRELEASED.md', addUnreleased: true } };
-  const plugin = factory(Plugin, { namespace, options });
+  const plugin = await factory(Plugin, { namespace, options });
   await runTasks(plugin);
   assert.equal(plugin.getChangelog(), '* Item A\n* Item B');
   assert.match(
@@ -153,7 +154,7 @@ test('should write changelog and add unreleased section', async t => {
 
 test('should add links to the end of the file', async t => {
   const options = { [namespace]: { filename: 'CHANGELOG-VERSION_URL.md', addVersionUrl: true } };
-  const plugin = factory(Plugin, { namespace, options });
+  const plugin = await factory(Plugin, { namespace, options });
   plugin.config.setContext({
     latestTag: '1.0.0',
     repo: {
@@ -181,7 +182,7 @@ test('should add links with custom URL formats to the end of the file', async t 
       }
     }
   };
-  const plugin = factory(Plugin, { namespace, options });
+  const plugin = await factory(Plugin, { namespace, options });
   plugin.config.setContext({
     latestTag: '1.0.0',
     repo: {
@@ -199,7 +200,7 @@ test('should add links with custom URL formats to the end of the file', async t 
 
 test('should add links with custom head to the end of the file', async t => {
   const options = { [namespace]: { filename: 'CHANGELOG-VERSION_URL_HEAD.md', addVersionUrl: true, head: 'main' } };
-  const plugin = factory(Plugin, { namespace, options });
+  const plugin = await factory(Plugin, { namespace, options });
   plugin.config.setContext({
     latestTag: '1.0.0',
     repo: {
@@ -219,7 +220,7 @@ test('should add unreleased section and links to the end of the file', async t =
   const options = {
     [namespace]: { filename: 'CHANGELOG-VERSION_URL_UNRELEASED.md', addVersionUrl: true, addUnreleased: true }
   };
-  const plugin = factory(Plugin, { namespace, options });
+  const plugin = await factory(Plugin, { namespace, options });
   plugin.config.setContext({
     latestTag: '1.0.0',
     repo: {
@@ -239,7 +240,7 @@ test('should match an existing unreleased link in title case', async t => {
   const options = {
     [namespace]: { filename: 'CHANGELOG-VERSION_URL_UNRELEASED_TITLE_CASE.md', addVersionUrl: true, addUnreleased: true }
   };
-  const plugin = factory(Plugin, { namespace, options });
+  const plugin = await factory(Plugin, { namespace, options });
   plugin.config.setContext({
     latestTag: '1.0.0',
     repo: {
@@ -259,7 +260,7 @@ test('should add links to the end of a new changelog', async t => {
   const options = {
     [namespace]: { filename: 'CHANGELOG-VERSION_URL_NEW.md', addVersionUrl: true, strictLatest: false }
   };
-  const plugin = factory(Plugin, { namespace, options });
+  const plugin = await factory(Plugin, { namespace, options });
   sinon.stub(plugin, 'getLatestVersion').returns('0.0.0');
   plugin.config.setContext({
     latestTag: undefined,
