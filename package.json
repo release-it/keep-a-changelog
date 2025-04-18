@@ -50,7 +50,16 @@
   "release-it": {
     "github": {
       "release": true,
-      "tokenRef": "GITHUB_TOKEN_RELEASE_IT"
+      "tokenRef": "GITHUB_TOKEN_RELEASE_IT",
+      "releaseNotes": {
+        "commit": "* ${commit.subject} (${sha}){ - thanks @${author.login}!}",
+        "excludeMatches": [
+          "webpro"
+        ]
+      },
+      "comments": {
+        "submit": true
+      }
     },
     "hooks": {
       "before:init": "npm test"
