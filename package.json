@@ -31,18 +31,18 @@
   },
   "dependencies": {
     "detect-newline": "^4.0.1",
-    "semver": "^7.6.3",
+    "semver": "^7.7.1",
     "string-template": "^1.0.0"
   },
   "devDependencies": {
     "bron": "^2.0.3",
     "fs-monkey": "^1.0.6",
-    "memfs": "^4.15.3",
-    "release-it": "^18.0.0",
-    "sinon": "^19.0.2"
+    "memfs": "^4.17.0",
+    "release-it": "^19.0.0",
+    "sinon": "^20.0.0"
   },
   "peerDependencies": {
-    "release-it": "^18.0.0"
+    "release-it": "^18.0.0 || ^19.0.0"
   },
   "engines": {
     "node": ">=18"
