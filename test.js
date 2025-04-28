@@ -24,13 +24,13 @@ vol.fromJSON({
     '\r\n\r\n## [Unreleased]\r\n\r\n* Item A\r\n* Item B\r\n\r\n## [1.0.0] - 2020-05-02\r\n\r\n* Item C\r\n* Item D',
   './CHANGELOG-UNRELEASED.md': '## [Unreleased]\n\n* Item A\n* Item B\n\n## [1.0.0] - 2020-05-02\n\n* Item C\n* Item D',
   './CHANGELOG-VERSION_URL.md':
-    '## [Unreleased]\n\n* Item A\n* Item B\n\n## [1.0.0] - 2020-05-02\n\n* Item C\n* Item D\n\n[unreleased]: https://github.com/release-it/release-it/compare/1.0.0..HEAD\n[1.0.0]: https://github.com/release-it/release-it/compare/0.0.0...1.0.0',
+    '## [Unreleased]\n\n* Item A\n* Item B\n\n## [1.0.0] - 2020-05-02\n\n* Item C\n* Item D\n\n[Unreleased]: https://github.com/release-it/release-it/compare/1.0.0..HEAD\n[1.0.0]: https://github.com/release-it/release-it/compare/0.0.0...1.0.0',
   './CHANGELOG-VERSION_URL_FORMATS.md':
-    '## [Unreleased]\n\n* Item A\n* Item B\n\n## [1.0.0] - 2020-05-02\n\n* Item C\n* Item D\n\n[unreleased]: https://github.com/_git/release-it/release-it/compareBranch/1.0.0/HEAD\n[1.0.0]: https://github.com/_git/release-it/release-it/compareBranch/0.0.0/1.0.0',
+    '## [Unreleased]\n\n* Item A\n* Item B\n\n## [1.0.0] - 2020-05-02\n\n* Item C\n* Item D\n\n[Unreleased]: https://github.com/_git/release-it/release-it/compareBranch/1.0.0/HEAD\n[1.0.0]: https://github.com/_git/release-it/release-it/compareBranch/0.0.0/1.0.0',
   './CHANGELOG-VERSION_URL_HEAD.md':
-    '## [Unreleased]\n\n* Item A\n* Item B\n\n## [1.0.0] - 2020-05-02\n\n* Item C\n* Item D\n\n[unreleased]: https://github.com/release-it/release-it/compare/1.0.0..main\n[1.0.0]: https://github.com/release-it/release-it/compare/0.0.0...1.0.0',
+    '## [Unreleased]\n\n* Item A\n* Item B\n\n## [1.0.0] - 2020-05-02\n\n* Item C\n* Item D\n\n[Unreleased]: https://github.com/release-it/release-it/compare/1.0.0..main\n[1.0.0]: https://github.com/release-it/release-it/compare/0.0.0...1.0.0',
   './CHANGELOG-VERSION_URL_UNRELEASED.md':
-    '## [Unreleased]\n\n* Item A\n* Item B\n\n## [1.0.0] - 2020-05-02\n\n* Item C\n* Item D\n\n[unreleased]: https://github.com/user/project/compare/1.0.0..HEAD\n[1.0.0]: https://github.com/user/project/compare/0.0.0...1.0.0',
+    '## [Unreleased]\n\n* Item A\n* Item B\n\n## [1.0.0] - 2020-05-02\n\n* Item C\n* Item D\n\n[Unreleased]: https://github.com/user/project/compare/1.0.0..HEAD\n[1.0.0]: https://github.com/user/project/compare/0.0.0...1.0.0',
   './CHANGELOG-VERSION_URL_UNRELEASED_TITLE_CASE.md':
     '## [Unreleased]\n\n* Item A\n* Item B\n\n## [1.0.0] - 2020-05-02\n\n* Item C\n* Item D\n\n[Unreleased]: https://github.com/user/project/compare/1.0.0..HEAD\n[1.0.0]: https://github.com/user/project/compare/0.0.0...1.0.0',
   './CHANGELOG-VERSION_URL_NEW.md': '## [Unreleased]\n\n* Item A\n* Item B\n'
