@@ -28,14 +28,14 @@ In [release-it](https://github.com/release-it/release-it) config:
 
 ## Options
 
-| option            | default value    | description                                                                                                                                      |
-| ----------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| filename          | `'CHANGELOG.md'` | File with changelogs.                                                                                                                            |
-| addUnreleased     | `false`          | It leaves "Unreleased" title row if set to `true`.                                                                                               |
-| keepUnreleased    | `false`          | It leaves "Unreleased" title row unchanged if set to `true`.                                                                                     |
-| addVersionUrl     | `false`          | Links the version to the according changeset. Uses GitHub-compatible URLs by default, see other options to configure the URL format.             |
-| versionUrlFormats | See below.       | Determines the version URL format when `addVersionUrl` is set to `true`. Uses GitHub-compatible URLs by default.                                 |
-| head              | `'HEAD'`         | The git revision the new version tag is compared to in the Unreleased URL.                                                                       |
+| option            | default value    | description                                                                                                                          |
+| ----------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| filename          | `'CHANGELOG.md'` | File with changelogs.                                                                                                                |
+| addUnreleased     | `false`          | It leaves "Unreleased" title row if set to `true`.                                                                                   |
+| keepUnreleased    | `false`          | It leaves "Unreleased" title row unchanged if set to `true`.                                                                         |
+| addVersionUrl     | `false`          | Links the version to the according changeset. Uses GitHub-compatible URLs by default, see other options to configure the URL format. |
+| versionUrlFormats | See below.       | Determines the version URL format when `addVersionUrl` is set to `true`. Uses GitHub-compatible URLs by default.                     |
+| head              | `'HEAD'`         | The git revision the new version tag is compared to in the Unreleased URL.                                                           |
 
 ### versionUrlFormats
 
@@ -60,6 +60,6 @@ The URL formats used when `addVersionUrl` is set to `true`. Example configuratio
 | option          | default value                                         | description                                                                                 |
 | --------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------- |
 | repositoryUrl   | `'https://{host}/{repository}'`                       | The format of the repository URL.                                                           |
-| unreleasedUrl   | `'{repositoryUrl}/compare/{tagName}...{head}'`        | The format of the `[unreleased]` section URL.                                               |
+| unreleasedUrl   | `'{repositoryUrl}/compare/{tagName}...{head}'`        | The format of the `[Unreleased]` section URL.                                               |
 | versionUrl      | `'{repositoryUrl}/compare/{previousTag}...{tagName}'` | The format of a release version URL.                                                        |
 | firstVersionUrl | `'{repositoryUrl}/releases/tag/{tagName}'`            | The format of the first release version URL, i.e. when no previous tags have been released. |
