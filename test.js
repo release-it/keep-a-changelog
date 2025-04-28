@@ -166,7 +166,7 @@ test('should add links to the end of the file', async t => {
   assert.equal(plugin.getChangelog(), '* Item A\n* Item B');
   assert.match(
     readFile('./CHANGELOG-VERSION_URL.md'),
-    /^## \[1\.0\.1] - [0-9]{4}-[0-9]{2}-[0-9]{2}\n\n\* Item A\n\* Item B\n\n## \[1\.0\.0] - 2020-05-02\n\n\* Item C\n*\* Item D\n\n\[unreleased]: https:\/\/github\.com\/release-it\/release-it\/compare\/1\.0\.1\.\.\.HEAD\n\[1\.0\.1]: https:\/\/github\.com\/release-it\/release-it\/compare\/1\.0\.0\.\.\.1\.0\.1\n\[1\.0\.0]: https:\/\/github\.com\/release-it\/release-it\/compare\/0\.0\.0\.\.\.1\.0\.0\n$/
+    /^## \[1\.0\.1] - [0-9]{4}-[0-9]{2}-[0-9]{2}\n\n\* Item A\n\* Item B\n\n## \[1\.0\.0] - 2020-05-02\n\n\* Item C\n*\* Item D\n\n\[Unreleased]: https:\/\/github\.com\/release-it\/release-it\/compare\/1\.0\.1\.\.\.HEAD\n\[1\.0\.1]: https:\/\/github\.com\/release-it\/release-it\/compare\/1\.0\.0\.\.\.1\.0\.1\n\[1\.0\.0]: https:\/\/github\.com\/release-it\/release-it\/compare\/0\.0\.0\.\.\.1\.0\.0\n$/
   );
 });
 
@@ -194,7 +194,7 @@ test('should add links with custom URL formats to the end of the file', async t 
   assert.equal(plugin.getChangelog(), '* Item A\n* Item B');
   assert.match(
     readFile('./CHANGELOG-VERSION_URL_FORMATS.md'),
-    /^## \[1\.0\.1] - [0-9]{4}-[0-9]{2}-[0-9]{2}\n\n\* Item A\n\* Item B\n\n## \[1\.0\.0] - 2020-05-02\n\n\* Item C\n*\* Item D\n\n\[unreleased]: https:\/\/github\.com\/_git\/release-it\/release-it\/compareBranch\/1\.0\.1\/HEAD\n\[1\.0\.1]: https:\/\/github\.com\/_git\/release-it\/release-it\/compareBranch\/1\.0\.0\/1\.0\.1\n\[1\.0\.0]: https:\/\/github\.com\/_git\/release-it\/release-it\/compareBranch\/0\.0\.0\/1\.0\.0\n$/
+    /^## \[1\.0\.1] - [0-9]{4}-[0-9]{2}-[0-9]{2}\n\n\* Item A\n\* Item B\n\n## \[1\.0\.0] - 2020-05-02\n\n\* Item C\n*\* Item D\n\n\[Unreleased]: https:\/\/github\.com\/_git\/release-it\/release-it\/compareBranch\/1\.0\.1\/HEAD\n\[1\.0\.1]: https:\/\/github\.com\/_git\/release-it\/release-it\/compareBranch\/1\.0\.0\/1\.0\.1\n\[1\.0\.0]: https:\/\/github\.com\/_git\/release-it\/release-it\/compareBranch\/0\.0\.0\/1\.0\.0\n$/
   );
 });
 
@@ -212,7 +212,7 @@ test('should add links with custom head to the end of the file', async t => {
   assert.equal(plugin.getChangelog(), '* Item A\n* Item B');
   assert.match(
     readFile('./CHANGELOG-VERSION_URL_HEAD.md'),
-    /^## \[1\.0\.1] - [0-9]{4}-[0-9]{2}-[0-9]{2}\n\n\* Item A\n\* Item B\n\n## \[1\.0\.0] - 2020-05-02\n\n\* Item C\n*\* Item D\n\n\[unreleased]: https:\/\/github\.com\/release-it\/release-it\/compare\/1\.0\.1\.\.\.main\n\[1\.0\.1]: https:\/\/github\.com\/release-it\/release-it\/compare\/1\.0\.0\.\.\.1\.0\.1\n\[1\.0\.0]: https:\/\/github\.com\/release-it\/release-it\/compare\/0\.0\.0\.\.\.1\.0\.0\n$/
+    /^## \[1\.0\.1] - [0-9]{4}-[0-9]{2}-[0-9]{2}\n\n\* Item A\n\* Item B\n\n## \[1\.0\.0] - 2020-05-02\n\n\* Item C\n*\* Item D\n\n\[Unreleased]: https:\/\/github\.com\/release-it\/release-it\/compare\/1\.0\.1\.\.\.main\n\[1\.0\.1]: https:\/\/github\.com\/release-it\/release-it\/compare\/1\.0\.0\.\.\.1\.0\.1\n\[1\.0\.0]: https:\/\/github\.com\/release-it\/release-it\/compare\/0\.0\.0\.\.\.1\.0\.0\n$/
   );
 });
 
@@ -232,7 +232,7 @@ test('should add unreleased section and links to the end of the file', async t =
   assert.equal(plugin.getChangelog(), '* Item A\n* Item B');
   assert.match(
     readFile('./CHANGELOG-VERSION_URL_UNRELEASED.md'),
-    /^## \[Unreleased]\n\n## \[1\.0\.1] - [0-9]{4}-[0-9]{2}-[0-9]{2}\n\n\* Item A\n\* Item B\n\n## \[1\.0\.0] - 2020-05-02\n\n\* Item C\n*\* Item D\n\n\[unreleased]: https:\/\/github\.com\/user\/project\/compare\/1\.0\.1\.\.\.HEAD\n\[1\.0\.1]: https:\/\/github\.com\/user\/project\/compare\/1\.0\.0\.\.\.1\.0\.1\n\[1\.0\.0]: https:\/\/github\.com\/user\/project\/compare\/0\.0\.0\.\.\.1\.0\.0\n/
+    /^## \[Unreleased]\n\n## \[1\.0\.1] - [0-9]{4}-[0-9]{2}-[0-9]{2}\n\n\* Item A\n\* Item B\n\n## \[1\.0\.0] - 2020-05-02\n\n\* Item C\n*\* Item D\n\n\[Unreleased]: https:\/\/github\.com\/user\/project\/compare\/1\.0\.1\.\.\.HEAD\n\[1\.0\.1]: https:\/\/github\.com\/user\/project\/compare\/1\.0\.0\.\.\.1\.0\.1\n\[1\.0\.0]: https:\/\/github\.com\/user\/project\/compare\/0\.0\.0\.\.\.1\.0\.0\n/
   );
 });
 
@@ -252,7 +252,7 @@ test('should match an existing unreleased link in title case', async t => {
   assert.equal(plugin.getChangelog(), '* Item A\n* Item B');
   assert.match(
     readFile('./CHANGELOG-VERSION_URL_UNRELEASED_TITLE_CASE.md'),
-    /^## \[Unreleased]\n\n## \[1\.0\.1] - [0-9]{4}-[0-9]{2}-[0-9]{2}\n\n\* Item A\n\* Item B\n\n## \[1\.0\.0] - 2020-05-02\n\n\* Item C\n*\* Item D\n\n\[unreleased]: https:\/\/github\.com\/user\/project\/compare\/1\.0\.1\.\.\.HEAD\n\[1\.0\.1]: https:\/\/github\.com\/user\/project\/compare\/1\.0\.0\.\.\.1\.0\.1\n\[1\.0\.0]: https:\/\/github\.com\/user\/project\/compare\/0\.0\.0\.\.\.1\.0\.0\n/
+    /^## \[Unreleased]\n\n## \[1\.0\.1] - [0-9]{4}-[0-9]{2}-[0-9]{2}\n\n\* Item A\n\* Item B\n\n## \[1\.0\.0] - 2020-05-02\n\n\* Item C\n*\* Item D\n\n\[Unreleased]: https:\/\/github\.com\/user\/project\/compare\/1\.0\.1\.\.\.HEAD\n\[1\.0\.1]: https:\/\/github\.com\/user\/project\/compare\/1\.0\.0\.\.\.1\.0\.1\n\[1\.0\.0]: https:\/\/github\.com\/user\/project\/compare\/0\.0\.0\.\.\.1\.0\.0\n/
   );
 });
 
@@ -274,6 +274,6 @@ test('should add links to the end of a new changelog', async t => {
   assert.equal(plugin.getChangelog(), '* Item A\n* Item B');
   assert.match(
     readFile('./CHANGELOG-VERSION_URL_NEW.md'),
-    /^## \[1\.0\.0] - [0-9]{4}-[0-9]{2}-[0-9]{2}\n\n\* Item A\n\* Item B\n\n\[unreleased]: https:\/\/github\.com\/user\/project\/compare\/1\.0\.0\.\.\.HEAD\n\[1\.0\.0]: https:\/\/github\.com\/user\/project\/releases\/tag\/1\.0\.0\n$/
+    /^## \[1\.0\.0] - [0-9]{4}-[0-9]{2}-[0-9]{2}\n\n\* Item A\n\* Item B\n\n\[Unreleased]: https:\/\/github\.com\/user\/project\/compare\/1\.0\.0\.\.\.HEAD\n\[1\.0\.0]: https:\/\/github\.com\/user\/project\/releases\/tag\/1\.0\.0\n$/
   );
 });
