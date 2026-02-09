@@ -31,15 +31,15 @@
   },
   "dependencies": {
     "detect-newline": "^4.0.1",
-    "semver": "^7.7.1",
+    "semver": "^7.7.4",
     "string-template": "^1.0.0"
   },
   "devDependencies": {
     "bron": "^2.0.3",
-    "fs-monkey": "^1.0.6",
-    "memfs": "^4.17.0",
-    "release-it": "^19.0.0",
-    "sinon": "^20.0.0"
+    "fs-monkey": "^1.1.0",
+    "memfs": "^4.56.10",
+    "release-it": "^19.2.4",
+    "sinon": "^21.0.1"
   },
   "peerDependencies": {
     "release-it": "^18.0.0 || ^19.0.0"
