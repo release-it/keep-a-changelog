@@ -132,11 +132,11 @@ class KeepAChangelog extends Plugin {
     let updatedChangelog = changelog;
 
     const repositoryUrl = format(this.versionUrlFormats.repositoryUrl, repo);
-    const unreleasedLinkRegex = new RegExp(`\\[unreleased\\]\\:.*${this.head}`, 'i');
+    const unreleasedLinkRegex = new RegExp(`\\[Unreleased\\]\\:.*${this.head}`, 'i');
 
     // Add or update the Unreleased link
     const unreleasedUrl = format(this.versionUrlFormats.unreleasedUrl, { repositoryUrl, tagName, head: this.head });
-    const unreleasedLink = `[unreleased]: ${unreleasedUrl}`;
+    const unreleasedLink = `[Unreleased]: ${unreleasedUrl}`;
     if (unreleasedLinkRegex.test(updatedChangelog)) {
       updatedChangelog = updatedChangelog.replace(unreleasedLinkRegex, unreleasedLink);
     } else {
