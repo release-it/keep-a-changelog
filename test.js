@@ -1,11 +1,13 @@
 import { strict as assert } from 'node:assert';
 import test from 'bron';
 import fs from 'node:fs';
-import { vol } from 'memfs';
+import { memfs } from 'memfs';
 import { patchFs } from 'fs-monkey';
 import { factory, runTasks } from 'release-it/test/util/index.js';
 import sinon from 'sinon';
 import Plugin from './index.js';
+
+const { vol } = memfs({}, process.cwd());
 
 const initialDryRunFileContents =
   '\n\n## [Unreleased]\n\n* Item A\n* Item B\n\n## [1.0.0] - 2020-05-02\n\n* Item C\n* Item D';
