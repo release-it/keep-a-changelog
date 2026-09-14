@@ -38,7 +38,7 @@
     "bron": "^2.0.3",
     "fs-monkey": "^1.1.0",
     "memfs": "^4.64.0",
-    "release-it": "^21.0.0",
+    "release-it": "^21.0.1",
     "sinon": "^22.1.0"
   },
   "peerDependencies": {
@@ -47,6 +47,7 @@
   "engines": {
     "node": "^22.21.0 || >=24.0.0"
   },
+  "packageManager": "pnpm@11.17.0",
   "release-it": {
     "github": {
       "release": true,
@@ -62,7 +63,7 @@
       }
     },
     "hooks": {
-      "before:init": "npm test"
+      "before:init": "pnpm test"
     }
   }
 }
