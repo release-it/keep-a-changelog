@@ -1,5 +1,5 @@
 import { strict as assert } from 'node:assert';
-import test from 'bron';
+import test, { beforeEach } from 'node:test';
 import fs from 'node:fs';
 import { memfs } from 'memfs';
 import { patchFs } from 'fs-monkey';
@@ -12,7 +12,7 @@ const { vol } = memfs({}, process.cwd());
 const initialDryRunFileContents =
   '\n\n## [Unreleased]\n\n* Item A\n* Item B\n\n## [1.0.0] - 2020-05-02\n\n* Item C\n* Item D';
 
-vol.fromJSON({
+const fixtures = {
   './CHANGELOG-FOO.md': '## [FOO]\n\n* Item A\n* Item B',
   './CHANGELOG-MULTIPLE_UNRELEASED.md': '## [Unreleased]\n* Item A\n\n## [Unreleased]* Item B\nB\n* Item C\n* Item D',
   './CHANGELOG-INVALID_ORDER.md':
@@ -36,9 +36,14 @@ vol.fromJSON({
   './CHANGELOG-VERSION_URL_UNRELEASED_TITLE_CASE.md':
     '## [Unreleased]\n\n* Item A\n* Item B\n\n## [1.0.0] - 2020-05-02\n\n* Item C\n* Item D\n\n[Unreleased]: https://github.com/user/project/compare/1.0.0..HEAD\n[1.0.0]: https://github.com/user/project/compare/0.0.0...1.0.0',
   './CHANGELOG-VERSION_URL_NEW.md': '## [Unreleased]\n\n* Item A\n* Item B\n'
-});
+};
 
 patchFs(vol);
+
+beforeEach(() => {
+  vol.reset();
+  vol.fromJSON(fixtures);
+});
 
 const readFile = file => fs.readFileSync(file).toString();
 

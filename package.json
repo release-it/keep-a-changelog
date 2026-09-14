@@ -5,7 +5,7 @@
   "type": "module",
   "exports": "./index.js",
   "scripts": {
-    "test": "bron test.js",
+    "test": "node --test test.js",
     "release": "release-it"
   },
   "keywords": [
@@ -35,7 +35,6 @@
     "string-template": "^1.0.0"
   },
   "devDependencies": {
-    "bron": "^2.0.3",
     "fs-monkey": "^1.1.0",
     "memfs": "^4.76.0",
     "release-it": "^21.0.3",
