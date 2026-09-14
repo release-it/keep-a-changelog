@@ -36,6 +36,7 @@
   },
   "devDependencies": {
     "fs-monkey": "^1.1.0",
+    "installed-check": "^11.0.0",
     "memfs": "^4.76.0",
     "release-it": "^21.0.3",
     "sinon": "^22.1.0"
@@ -44,7 +45,7 @@
     "release-it": "^18.0.0 || ^19.0.0 || ^20.0.0 || ^21.0.0"
   },
   "engines": {
-    "node": "^22.21.0 || >=24.0.0"
+    "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
   },
   "packageManager": "pnpm@11.17.0",
   "release-it": {
@@ -65,7 +66,7 @@
       }
     },
     "hooks": {
-      "before:init": "pnpm test"
+      "before:init": "pnpm test && installed-check"
     }
   }
 }
